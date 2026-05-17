@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts: Noto Sans KR -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
     <style>
         body {
             font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
@@ -37,13 +38,20 @@
 </head>
 <body class="text-slate-800 pb-12">
 
-    <!-- 상단 헤더 (데스크톱 대응으로 가로폭 확장) -->
+    <!-- 상단 헤더 (데스크톱 대응으로 가로폭 확장 및 실시간 연결 표시등 추가) -->
     <header class="bg-white border-b border-slate-200 py-4 px-4 sticky top-0 z-40 shadow-sm">
         <div class="max-w-5xl mx-auto flex items-center justify-between">
             <span class="text-base font-black tracking-tight text-slate-900 flex items-center gap-2">
                 <i class="fa-solid fa-cross text-blue-700"></i> 2026 믿음을 사용하라
             </span>
-            <span class="text-[11px] font-bold text-blue-700 bg-blue-50 border border-blue-100 px-2.5 py-1 rounded-full">말씀과 기도제목 나눔방</span>
+            <div class="flex items-center gap-2">
+                <!-- 실시간 연결 상태 배지 -->
+                <span id="sync-badge" class="text-[10px] font-bold text-slate-400 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full flex items-center gap-1">
+                    <span id="sync-dot" class="w-1.5 h-1.5 rounded-full bg-slate-300 animate-pulse"></span>
+                    <span id="sync-text">연결 대기 중</span>
+                </span>
+                <span class="text-[11px] font-bold text-blue-700 bg-blue-50 border border-blue-100 px-2.5 py-1 rounded-full">말씀과 기도제목 나눔방</span>
+            </div>
         </div>
     </header>
 
@@ -145,7 +153,10 @@
 
                 <!-- 기도 제목 리스트가 실시간 나열되는 카드목록 -->
                 <div id="prayer-list" class="space-y-3">
-                    <!-- 동적으로 추가되는 영역 -->
+                    <div class="bg-white rounded-xl p-8 text-center border border-slate-200 flex flex-col items-center justify-center space-y-2">
+                        <i class="fa-solid fa-spinner animate-spin text-blue-600 text-xl"></i>
+                        <p class="text-xs text-slate-500 font-medium">실시간 기도제목을 연결하는 중입니다...</p>
+                    </div>
                 </div>
             </div>
 
@@ -173,7 +184,12 @@
     </div>
 
     <!-- ================= [SCRIPT] ================= -->
-    <script>
+    <script type="module">
+        // Firebase Core & Firestore/Auth Modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
         // --- 1. 성경 말씀 데이터베이스 (15선) ---
         const bibleVerses = [
             { id: 1, text: "여호와는 나의 목자시니 내게 부족함이 없으리로다", ref: "시편 23편 1절", theme: "평안" },
@@ -193,7 +209,6 @@
             { id: 15, text: "너희 중에 누구든지 지혜가 부족하거든 모든 사람에게 후히 주시고 꾸짖지 아니하시는 하나님께 구하라 그리하면 주시리라", ref: "야고보서 1장 5절", theme: "인도" }
         ];
 
-        // 푸른빛 그라디언트 카드 배경 목록
         const backgroundClasses = [
             'card-blue-1', 'card-blue-2', 'card-blue-3', 'card-blue-4'
         ];
@@ -201,22 +216,138 @@
         let currentVerseIndex = 0;
         let currentBgIndex = 0; 
         let prayers = [];
-        let prayerIdToDelete = null; // 현재 삭제 대기 중인 기도제목 ID
-        
-        let userId = localStorage.getItem('graceshare_simple_uid');
-        if (!userId) {
-            userId = 'user_' + Math.random().toString(36).substring(2, 11);
-            localStorage.setItem('graceshare_simple_uid', userId);
-        }
+        let prayerIdToDelete = null;
 
-        // --- 2. 초기화 ---
-        window.onload = function() {
-            randomizeVerse();
-            loadPrayers();
-            renderPrayers();
+        // Firebase Config 및 AppID (플랫폼 자동 할당 연동)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'graceshare-faith-2026';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "",
+            authDomain: "default-demo.firebaseapp.com",
+            projectId: "default-demo",
+            storageBucket: "default-demo.appspot.com",
+            messagingSenderId: "000000000000",
+            appId: "1:000000000000:web:0000000000000"
         };
 
-        // --- 3. 말씀 카드 제어 ---
+        let auth, db, user, userId;
+        let unsubscribeRealtime = null;
+
+        // --- 2. 초기화 및 실시간 데이터 바인딩 ---
+        window.onload = async function() {
+            randomizeVerse();
+            updateConnectionStatus('connecting');
+            await initFirebase();
+        };
+
+        // 연결 상태 표시 배지 UI 제어
+        function updateConnectionStatus(status) {
+            const dot = document.getElementById('sync-dot');
+            const text = document.getElementById('sync-text');
+            const badge = document.getElementById('sync-badge');
+
+            if (status === 'connected') {
+                dot.className = "w-1.5 h-1.5 rounded-full bg-emerald-500 animate-none";
+                text.innerText = "실시간 동기화 중";
+                badge.className = "text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full flex items-center gap-1";
+            } else if (status === 'connecting') {
+                dot.className = "w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse";
+                text.innerText = "연결 중...";
+                badge.className = "text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-full flex items-center gap-1";
+            } else {
+                dot.className = "w-1.5 h-1.5 rounded-full bg-rose-500 animate-none";
+                text.innerText = "연결 끊김 (오프라인)";
+                badge.className = "text-[10px] font-bold text-rose-700 bg-rose-50 border border-rose-100 px-2 py-0.5 rounded-full flex items-center gap-1";
+            }
+        }
+
+        // --- 3. Firebase 및 인증 처리 (Platform Rule 3 준수) ---
+        async function initFirebase() {
+            try {
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                // 커스텀 토큰이 있다면 우선 로그인, 없다면 익명 인증 진행
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    const userCredential = await signInWithCustomToken(auth, __initial_auth_token);
+                    user = userCredential.user;
+                } else {
+                    const userCredential = await signInAnonymously(auth);
+                    user = userCredential.user;
+                }
+
+                userId = user.uid;
+                updateConnectionStatus('connected');
+
+                // 실시간 동기화 구독 시작 (RULE 1 & 2 준수)
+                setupRealtimeListener();
+
+            } catch (error) {
+                console.error("Firebase 초기화 에러:", error);
+                updateConnectionStatus('disconnected');
+                showToast("실시간 서버 연결 실패. 오프라인 모드 유지.");
+                loadPrayersLocalFallback();
+            }
+        }
+
+        // --- 4. Firestore 실시간 동기화 연결 (RULE 1, 2 준수) ---
+        function setupRealtimeListener() {
+            if (!user) return;
+
+            // Strict Path 적용 (RULE 1)
+            const collectionPath = collection(db, 'artifacts', appId, 'public', 'data', 'prayers');
+
+            // Complex Query 금지 (RULE 2: 단순 collection fetch 후 클라이언트 정렬)
+            unsubscribeRealtime = onSnapshot(collectionPath, (snapshot) => {
+                const fetchedPrayers = [];
+                snapshot.forEach((doc) => {
+                    fetchedPrayers.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+
+                // 생성 일자(createdAt) 기준 역순 정렬 (최신 등록글 우선)
+                fetchedPrayers.sort((a, b) => {
+                    const valA = a.createdAt || 0;
+                    const valB = b.createdAt || 0;
+                    return valB - valA;
+                });
+
+                prayers = fetchedPrayers;
+                renderPrayers();
+                updateConnectionStatus('connected');
+            }, (error) => {
+                console.error("Firestore onSnapshot error:", error);
+                updateConnectionStatus('disconnected');
+                showToast("데이터를 동기화하는 중 네트워크 오류가 발생했습니다.");
+            });
+        }
+
+        // 오프라인 로컬 폴백 (네트워크 에러 대응용)
+        function loadPrayersLocalFallback() {
+            const savedData = localStorage.getItem('graceshare_simple_prayers');
+            if (savedData) {
+                prayers = JSON.parse(savedData);
+            } else {
+                prayers = [
+                    {
+                        id: 'p1',
+                        author: '믿음충만',
+                        userId: 'other_u1',
+                        category: '치유',
+                        content: '장기 치료로 인해 육체적으로, 또 정서적으로 많이 지쳐있는 가족이 있습니다. 지치지 않고 소망의 빛을 마음에 품고 하루하루 일어날 용기를 얻기를 간청합니다.',
+                        prayingCount: 5,
+                        prayedUsers: [],
+                        date: '2026-05-17',
+                        createdAt: Date.now() - 3600000
+                    }
+                ];
+            }
+            renderPrayers();
+        }
+
+        // --- 5. 말씀 카드 제어 ---
         function randomizeVerse() {
             const randomIndex = Math.floor(Math.random() * bibleVerses.length);
             currentVerseIndex = randomIndex;
@@ -239,7 +370,6 @@
             }, 150);
         }
 
-        // 카드 배경 변경
         function changeCardBackground() {
             const card = document.getElementById('verse-card');
             card.classList.remove(backgroundClasses[currentBgIndex]);
@@ -247,7 +377,6 @@
             card.classList.add(backgroundClasses[currentBgIndex]);
         }
 
-        // 클립보드 복사
         function copyVerseToClipboard() {
             const verse = bibleVerses[currentVerseIndex];
             const textToCopy = `"${verse.text}" (${verse.ref})`;
@@ -262,45 +391,13 @@
             showToast("말씀이 복사되었습니다.");
         }
 
-
-        // --- 4. 기도제목 나눔 로직 ---
-        function loadPrayers() {
-            const savedData = localStorage.getItem('graceshare_simple_prayers');
-            if (savedData) {
-                prayers = JSON.parse(savedData);
-            } else {
-                prayers = [
-                    {
-                        id: 'p1',
-                        author: '믿음충만',
-                        userId: 'other_u1',
-                        category: '치유',
-                        content: '장기 치료로 인해 육체적으로, 또 정서적으로 많이 지쳐있는 가족이 있습니다. 지치지 않고 소망의 빛을 마음에 품고 하루하루 일어날 용기를 얻기를 간청합니다.',
-                        prayingCount: 5,
-                        prayedUsers: [],
-                        date: '2026-05-17'
-                    },
-                    {
-                        id: 'p2',
-                        author: '지혜요청',
-                        userId: 'other_u2',
-                        category: '개인기도',
-                        content: '중요한 결정과 기로 앞에 서서 흔들리고 있습니다. 세상의 소음에 마음을 뺏기지 않고 주님이 주시는 고요한 울림을 식별할 수 있는 깊은 통찰력과 지혜를 갖추도록 기도 부탁드립니다.',
-                        prayingCount: 2,
-                        prayedUsers: [],
-                        date: '2026-05-16'
-                    }
-                ];
-                savePrayersToStorage();
+        // --- 6. 실시간 기도제목 비즈니스 로직 ---
+        async function submitPrayer() {
+            if (!user) {
+                showToast("아직 실시간 서버에 연결 중입니다. 잠시만 기다려주세요.");
+                return;
             }
-        }
 
-        function savePrayersToStorage() {
-            localStorage.setItem('graceshare_simple_prayers', JSON.stringify(prayers));
-        }
-
-        // 기도제목 등록
-        function submitPrayer() {
             const authorInput = document.getElementById('prayer-author');
             const categorySelect = document.getElementById('prayer-category');
             const contentTextarea = document.getElementById('prayer-content');
@@ -322,34 +419,36 @@
             const dateString = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
             const newPrayer = {
-                id: 'prayer_' + Date.now(),
                 author: author,
                 userId: userId,
                 category: category,
                 content: content,
                 prayingCount: 0,
                 prayedUsers: [],
-                date: dateString
+                date: dateString,
+                createdAt: Date.now() // 실시간 정렬용 타임스탬프
             };
 
-            prayers.unshift(newPrayer);
-            savePrayersToStorage();
-            renderPrayers();
+            try {
+                // Firestore 업로드 (onSnapshot이 자동 감지해 렌더링함)
+                const collectionPath = collection(db, 'artifacts', appId, 'public', 'data', 'prayers');
+                await addDoc(collectionPath, newPrayer);
 
-            authorInput.value = '';
-            contentTextarea.value = '';
-
-            showToast("기도제목이 등록되었습니다.");
+                authorInput.value = '';
+                contentTextarea.value = '';
+                showToast("실시간 기도제목이 등록되었습니다!");
+            } catch (error) {
+                console.error("Firestore 추가 오류:", error);
+                showToast("등록에 실패했습니다. 오프라인 상태일 수 있습니다.");
+            }
         }
 
-        // 기도제목 수정 폼 열기
         function editPrayer(prayerId) {
             const idx = prayers.findIndex(p => p.id === prayerId);
             if (idx === -1) return;
 
             const prayer = prayers[idx];
 
-            // 카드의 본문 부분을 텍스트 필드로 치환
             const contentContainer = document.getElementById(`content-container-${prayerId}`);
             const editControls = document.getElementById(`edit-controls-${prayerId}`);
             
@@ -363,17 +462,16 @@
                 </div>
             `;
             
-            // 기존 상단 우측 수정/삭제 버튼을 일시 비활성화
             if (editControls) editControls.classList.add('hidden');
         }
 
-        // 수정 취소
         function cancelEdit(prayerId) {
             renderPrayers();
         }
 
-        // 수정사항 저장
-        function saveEdit(prayerId) {
+        async function saveEdit(prayerId) {
+            if (!user) return;
+
             const idx = prayers.findIndex(p => p.id === prayerId);
             if (idx === -1) return;
 
@@ -384,65 +482,84 @@
                 return;
             }
 
-            prayers[idx].content = newContent;
-            savePrayersToStorage();
-            renderPrayers();
-            showToast("기도제목이 수정되었습니다.");
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'prayers', prayerId);
+                await updateDoc(docRef, { content: newContent });
+                showToast("실시간 수정 완료!");
+            } catch (error) {
+                console.error("Firestore 업데이트 에러:", error);
+                showToast("수정에 실패했습니다.");
+                renderPrayers();
+            }
         }
 
-        // 커스텀 모달 열기 (삭제 준비)
         function deletePrayer(prayerId) {
             prayerIdToDelete = prayerId;
             const modal = document.getElementById('delete-confirm-modal');
             modal.classList.remove('hidden');
             
-            // 모달 안 버튼에 이벤트 연결
             document.getElementById('modal-delete-confirm-btn').onclick = executeDelete;
         }
 
-        // 커스텀 모달 닫기
         function closeDeleteModal() {
             const modal = document.getElementById('delete-confirm-modal');
             modal.classList.add('hidden');
             prayerIdToDelete = null;
         }
 
-        // 실제 삭제 실행
-        function executeDelete() {
+        async function executeDelete() {
+            if (!user) return;
             if (prayerIdToDelete) {
-                prayers = prayers.filter(p => p.id !== prayerIdToDelete);
-                savePrayersToStorage();
-                renderPrayers();
-                showToast("기도제목이 삭제되었습니다.");
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'prayers', prayerIdToDelete);
+                    await deleteDoc(docRef);
+                    showToast("기도제목이 삭제되었습니다.");
+                } catch (error) {
+                    console.error("Firestore 삭제 에러:", error);
+                    showToast("삭제를 처리할 수 없습니다.");
+                }
             }
             closeDeleteModal();
         }
 
-        // 중보 동참 기능
-        function supportPrayer(prayerId) {
+        async function supportPrayer(prayerId) {
+            if (!user) {
+                showToast("서버 연결 중에는 참여할 수 없습니다.");
+                return;
+            }
+
             const idx = prayers.findIndex(p => p.id === prayerId);
             if (idx === -1) return;
 
             const p = prayers[idx];
-            if (!p.prayedUsers) p.prayedUsers = [];
+            let prayedUsers = p.prayedUsers ? [...p.prayedUsers] : [];
+            let prayingCount = p.prayingCount || 0;
 
-            const userIdx = p.prayedUsers.indexOf(userId);
+            const userIdx = prayedUsers.indexOf(userId);
 
             if (userIdx > -1) {
-                p.prayedUsers.splice(userIdx, 1);
-                p.prayingCount = Math.max(0, p.prayingCount - 1);
+                prayedUsers.splice(userIdx, 1);
+                prayingCount = Math.max(0, prayingCount - 1);
                 showToast("기도 동참을 취소했습니다.");
             } else {
-                p.prayedUsers.push(userId);
-                p.prayingCount = (p.prayingCount || 0) + 1;
-                showToast("중보 기도가 더해졌습니다.");
+                prayedUsers.push(userId);
+                prayingCount += 1;
+                showToast("중보 기도가 더해졌습니다!");
             }
 
-            savePrayersToStorage();
-            renderPrayers();
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'prayers', prayerId);
+                await updateDoc(docRef, {
+                    prayedUsers: prayedUsers,
+                    prayingCount: prayingCount
+                });
+            } catch (error) {
+                console.error("중보기도 업데이트 실패:", error);
+                showToast("동참 처리에 실패했습니다.");
+            }
         }
 
-        // 화면 렌더링
+        // --- 7. 화면 실시간 렌더링 ---
         function renderPrayers() {
             const listEl = document.getElementById('prayer-list');
             listEl.innerHTML = '';
@@ -450,7 +567,7 @@
             if (prayers.length === 0) {
                 listEl.innerHTML = `
                     <div class="bg-white rounded-xl p-8 text-center border border-slate-200">
-                        <p class="text-xs text-slate-500 font-medium">등록된 기도제목이 없습니다.</p>
+                        <p class="text-xs text-slate-500 font-medium">등록된 기도제목이 없습니다. 첫 기도제목을 올려보세요!</p>
                     </div>
                 `;
                 return;
@@ -488,7 +605,6 @@
                     </div>
                 `;
 
-                // 자신이 쓴 기도제목에만 수정 및 삭제 제어반(우측 상단) 렌더링
                 if (isMyPrayer) {
                     const controls = document.createElement('div');
                     controls.id = `edit-controls-${p.id}`;
@@ -509,7 +625,7 @@
             });
         }
 
-        // 토스트 출력 유틸
+        // 토스트 알림 유틸
         function showToast(message) {
             const toast = document.getElementById('toast');
             const messageEl = document.getElementById('toast-message');
@@ -523,6 +639,19 @@
                 toast.style.transform = 'translate(-50%, 0)';
             }, 2500);
         }
+
+        // Module 스코프 함수들을 전역 window 객체에 수동 등록하여 HTML 인라인 onclick 이벤트 대응
+        window.randomizeVerse = randomizeVerse;
+        window.changeCardBackground = changeCardBackground;
+        window.copyVerseToClipboard = copyVerseToClipboard;
+        window.submitPrayer = submitPrayer;
+        window.editPrayer = editPrayer;
+        window.cancelEdit = cancelEdit;
+        window.saveEdit = saveEdit;
+        window.deletePrayer = deletePrayer;
+        window.closeDeleteModal = closeDeleteModal;
+        window.supportPrayer = supportPrayer;
+
     </script>
 </body>
 </html>
