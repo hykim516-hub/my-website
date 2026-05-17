@@ -38,7 +38,7 @@
 </head>
 <body class="text-slate-800 pb-12">
 
-    <!-- 상단 헤더 (데스크톱 대응으로 가로폭 확장 및 실시간 연결 표시등 추가) -->
+    <!-- 상단 헤더 -->
     <header class="bg-white border-b border-slate-200 py-4 px-4 sticky top-0 z-40 shadow-sm">
         <div class="max-w-5xl mx-auto flex items-center justify-between">
             <span class="text-base font-black tracking-tight text-slate-900 flex items-center gap-2">
@@ -47,7 +47,7 @@
             <div class="flex items-center gap-2">
                 <!-- 실시간 연결 상태 배지 -->
                 <span id="sync-badge" class="text-[10px] font-bold text-slate-400 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full flex items-center gap-1">
-                    <span id="sync-dot" class="w-1.5 h-1.5 rounded-full bg-slate-300 animate-pulse"></span>
+                    <span id="sync-dot" class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
                     <span id="sync-text">연결 대기 중</span>
                 </span>
                 <span class="text-[11px] font-bold text-blue-700 bg-blue-50 border border-blue-100 px-2.5 py-1 rounded-full">말씀과 기도제목 나눔방</span>
@@ -61,7 +61,7 @@
         <!-- 반응형 12컬럼 그리드 시스템 구축 -->
         <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
             
-            <!-- 왼쪽 사이드바 (데스크톱에선 고정, 모바일에선 상단 배치) -->
+            <!-- 왼쪽 영역 (데스크톱에선 고정, 모바일에선 상단 배치) -->
             <div class="md:col-span-5 space-y-6 md:sticky md:top-20">
                 
                 <!-- ================= 1. 말씀읽기 세션 ================= -->
@@ -153,10 +153,7 @@
 
                 <!-- 기도 제목 리스트가 실시간 나열되는 카드목록 -->
                 <div id="prayer-list" class="space-y-3">
-                    <div class="bg-white rounded-xl p-8 text-center border border-slate-200 flex flex-col items-center justify-center space-y-2">
-                        <i class="fa-solid fa-spinner animate-spin text-blue-600 text-xl"></i>
-                        <p class="text-xs text-slate-500 font-medium">실시간 기도제목을 연결하는 중입니다...</p>
-                    </div>
+                    <!-- 동적으로 채워짐 -->
                 </div>
             </div>
 
@@ -185,10 +182,10 @@
 
     <!-- ================= [SCRIPT] ================= -->
     <script type="module">
-        // Firebase Core & Firestore/Auth Modules
+        // Firebase Core & Firestore/Auth Modules (클라우드 실시간용)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, updateDoc, deleteDoc, onSnapshot, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // --- 1. 성경 말씀 데이터베이스 (15선) ---
         const bibleVerses = [
@@ -218,10 +215,26 @@
         let prayers = [];
         let prayerIdToDelete = null;
 
-        // Firebase Config 및 AppID (플랫폼 자동 할당 연동)
+        // --- 고유 유저 ID 발행 및 로컬 저장 유지 (수정/삭제 권한 매칭) ---
+        let userId = localStorage.getItem('graceshare_simple_uid');
+        if (!userId) {
+            userId = 'user_' + Math.random().toString(36).substring(2, 11);
+            localStorage.setItem('graceshare_simple_uid', userId);
+        }
+
+        // --- 로컬 실시간 다중 탭 동기화 채널 개설 ---
+        const syncChannel = new BroadcastChannel('graceshare_local_sync');
+        syncChannel.onmessage = (event) => {
+            if (event.data && event.data.type === 'SYNC_DATA') {
+                prayers = event.data.prayers;
+                renderPrayers();
+            }
+        };
+
+        // --- 플랫폼 환경 연동 및 Firebase Config 감지 ---
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'graceshare-faith-2026';
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            apiKey: "",
+            apiKey: "", // 비어있을 경우 자동으로 로컬 실시간 동기화로 전환됨
             authDomain: "default-demo.firebaseapp.com",
             projectId: "default-demo",
             storageBucket: "default-demo.appspot.com",
@@ -229,14 +242,14 @@
             appId: "1:000000000000:web:0000000000000"
         };
 
-        let auth, db, user, userId;
-        let unsubscribeRealtime = null;
+        let db = null;
+        let isFirebaseActive = false;
 
-        // --- 2. 초기화 및 실시간 데이터 바인딩 ---
+        // --- 2. 초기화 ---
         window.onload = async function() {
             randomizeVerse();
             updateConnectionStatus('connecting');
-            await initFirebase();
+            await initSyncSystem();
         };
 
         // 연결 상태 표시 배지 UI 제어
@@ -245,60 +258,60 @@
             const text = document.getElementById('sync-text');
             const badge = document.getElementById('sync-badge');
 
-            if (status === 'connected') {
+            if (status === 'connected_cloud') {
                 dot.className = "w-1.5 h-1.5 rounded-full bg-emerald-500 animate-none";
-                text.innerText = "실시간 동기화 중";
+                text.innerText = "클라우드 동기화 중";
                 badge.className = "text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full flex items-center gap-1";
+            } else if (status === 'connected_local') {
+                dot.className = "w-1.5 h-1.5 rounded-full bg-blue-500 animate-none";
+                text.innerText = "로컬 실시간 모드";
+                badge.className = "text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-full flex items-center gap-1";
             } else if (status === 'connecting') {
                 dot.className = "w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse";
-                text.innerText = "연결 중...";
+                text.innerText = "서버 연결 중...";
                 badge.className = "text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-full flex items-center gap-1";
             } else {
                 dot.className = "w-1.5 h-1.5 rounded-full bg-rose-500 animate-none";
-                text.innerText = "연결 끊김 (오프라인)";
+                text.innerText = "연결 끊김";
                 badge.className = "text-[10px] font-bold text-rose-700 bg-rose-50 border border-rose-100 px-2 py-0.5 rounded-full flex items-center gap-1";
             }
         }
 
-        // --- 3. Firebase 및 인증 처리 (Platform Rule 3 준수) ---
-        async function initFirebase() {
-            try {
-                const app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
+        // --- 3. 동기화 핵심 엔진 (Firebase 연동 혹은 로컬 탭 동기화 폴백) ---
+        async function initSyncSystem() {
+            // Firebase API key가 정상적으로 존재하는지 판별
+            if (firebaseConfig.apiKey && firebaseConfig.apiKey.trim() !== "") {
+                try {
+                    const app = initializeApp(firebaseConfig);
+                    const auth = getAuth(app);
+                    db = getFirestore(app);
 
-                // 커스텀 토큰이 있다면 우선 로그인, 없다면 익명 인증 진행
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    const userCredential = await signInWithCustomToken(auth, __initial_auth_token);
-                    user = userCredential.user;
-                } else {
-                    const userCredential = await signInAnonymously(auth);
-                    user = userCredential.user;
+                    // 익명 또는 커스텀 토큰 로그인
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+
+                    // Firebase 실시간 리스너 작동 시도
+                    setupFirebaseRealtime();
+                    isFirebaseActive = true;
+                    return;
+                } catch (error) {
+                    console.warn("Firebase 연결에 실패하여 로컬 실시간 모드로 전환합니다.", error);
                 }
-
-                userId = user.uid;
-                updateConnectionStatus('connected');
-
-                // 실시간 동기화 구독 시작 (RULE 1 & 2 준수)
-                setupRealtimeListener();
-
-            } catch (error) {
-                console.error("Firebase 초기화 에러:", error);
-                updateConnectionStatus('disconnected');
-                showToast("실시간 서버 연결 실패. 오프라인 모드 유지.");
-                loadPrayersLocalFallback();
             }
+
+            // Firebase가 비활성 상태거나 실패하면 안전하게 Local Storage & Broadcast Sync 활성화
+            isFirebaseActive = false;
+            setupLocalRealtime();
         }
 
-        // --- 4. Firestore 실시간 동기화 연결 (RULE 1, 2 준수) ---
-        function setupRealtimeListener() {
-            if (!user) return;
-
-            // Strict Path 적용 (RULE 1)
+        // 3-1. Firebase 실시간 리스너 구성
+        function setupFirebaseRealtime() {
             const collectionPath = collection(db, 'artifacts', appId, 'public', 'data', 'prayers');
 
-            // Complex Query 금지 (RULE 2: 단순 collection fetch 후 클라이언트 정렬)
-            unsubscribeRealtime = onSnapshot(collectionPath, (snapshot) => {
+            onSnapshot(collectionPath, (snapshot) => {
                 const fetchedPrayers = [];
                 snapshot.forEach((doc) => {
                     fetchedPrayers.push({
@@ -307,29 +320,32 @@
                     });
                 });
 
-                // 생성 일자(createdAt) 기준 역순 정렬 (최신 등록글 우선)
-                fetchedPrayers.sort((a, b) => {
-                    const valA = a.createdAt || 0;
-                    const valB = b.createdAt || 0;
-                    return valB - valA;
-                });
+                // 타임스탬프 기준 역순 정렬 (최신 등록 우선)
+                fetchedPrayers.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
                 prayers = fetchedPrayers;
                 renderPrayers();
-                updateConnectionStatus('connected');
+                updateConnectionStatus('connected_cloud');
             }, (error) => {
-                console.error("Firestore onSnapshot error:", error);
-                updateConnectionStatus('disconnected');
-                showToast("데이터를 동기화하는 중 네트워크 오류가 발생했습니다.");
+                console.error("Firebase onSnapshot error:", error);
+                isFirebaseActive = false;
+                setupLocalRealtime();
             });
         }
 
-        // 오프라인 로컬 폴백 (네트워크 에러 대응용)
-        function loadPrayersLocalFallback() {
+        // 3-2. 로컬 실시간 동기화 구성 (Fallback & 탭 간 자동 동기화)
+        function setupLocalRealtime() {
+            loadPrayersFromLocalStorage();
+            renderPrayers();
+            updateConnectionStatus('connected_local');
+        }
+
+        function loadPrayersFromLocalStorage() {
             const savedData = localStorage.getItem('graceshare_simple_prayers');
             if (savedData) {
                 prayers = JSON.parse(savedData);
             } else {
+                // 초기 덤프 데이터 제공
                 prayers = [
                     {
                         id: 'p1',
@@ -341,13 +357,34 @@
                         prayedUsers: [],
                         date: '2026-05-17',
                         createdAt: Date.now() - 3600000
+                    },
+                    {
+                        id: 'p2',
+                        author: '지혜요청',
+                        userId: 'other_u2',
+                        category: '개인기도',
+                        content: '중요한 결정과 기로 앞에 서서 흔들리고 있습니다. 세상의 소음에 마음을 뺏기지 않고 주님이 주시는 고요한 울림을 식별할 수 있는 깊은 통찰력과 지혜를 갖추도록 기도 부탁드립니다.',
+                        prayingCount: 2,
+                        prayedUsers: [],
+                        date: '2026-05-16',
+                        createdAt: Date.now() - 7200000
                     }
                 ];
+                saveAndNotifyLocal();
             }
-            renderPrayers();
         }
 
-        // --- 5. 말씀 카드 제어 ---
+        function saveAndNotifyLocal() {
+            localStorage.setItem('graceshare_simple_prayers', JSON.stringify(prayers));
+            // 열려있는 다른 브라우저 탭들에 변경사항 즉시 전파
+            syncChannel.postMessage({
+                type: 'SYNC_DATA',
+                prayers: prayers
+            });
+        }
+
+
+        // --- 4. 말씀 카드 제어 ---
         function randomizeVerse() {
             const randomIndex = Math.floor(Math.random() * bibleVerses.length);
             currentVerseIndex = randomIndex;
@@ -391,13 +428,9 @@
             showToast("말씀이 복사되었습니다.");
         }
 
-        // --- 6. 실시간 기도제목 비즈니스 로직 ---
-        async function submitPrayer() {
-            if (!user) {
-                showToast("아직 실시간 서버에 연결 중입니다. 잠시만 기다려주세요.");
-                return;
-            }
 
+        // --- 5. 기도제목 나눔 비즈니스 로직 ---
+        async function submitPrayer() {
             const authorInput = document.getElementById('prayer-author');
             const categorySelect = document.getElementById('prayer-category');
             const contentTextarea = document.getElementById('prayer-content');
@@ -419,6 +452,7 @@
             const dateString = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
             const newPrayer = {
+                id: 'prayer_' + Date.now(),
                 author: author,
                 userId: userId,
                 category: category,
@@ -426,23 +460,34 @@
                 prayingCount: 0,
                 prayedUsers: [],
                 date: dateString,
-                createdAt: Date.now() // 실시간 정렬용 타임스탬프
+                createdAt: Date.now()
             };
 
-            try {
-                // Firestore 업로드 (onSnapshot이 자동 감지해 렌더링함)
-                const collectionPath = collection(db, 'artifacts', appId, 'public', 'data', 'prayers');
-                await addDoc(collectionPath, newPrayer);
-
-                authorInput.value = '';
-                contentTextarea.value = '';
-                showToast("실시간 기도제목이 등록되었습니다!");
-            } catch (error) {
-                console.error("Firestore 추가 오류:", error);
-                showToast("등록에 실패했습니다. 오프라인 상태일 수 있습니다.");
+            if (isFirebaseActive) {
+                try {
+                    const collectionPath = collection(db, 'artifacts', appId, 'public', 'data', 'prayers');
+                    await addDoc(collectionPath, newPrayer);
+                    showToast("기도제목이 동기화 등록되었습니다.");
+                } catch (error) {
+                    console.error("Firebase 등록 실패, 로컬로 우회", error);
+                    savePrayerLocally(newPrayer);
+                }
+            } else {
+                savePrayerLocally(newPrayer);
             }
+
+            authorInput.value = '';
+            contentTextarea.value = '';
         }
 
+        function savePrayerLocally(newPrayer) {
+            prayers.unshift(newPrayer);
+            saveAndNotifyLocal();
+            renderPrayers();
+            showToast("로컬 실시간 등록되었습니다.");
+        }
+
+        // 수정 폼 열기
         function editPrayer(prayerId) {
             const idx = prayers.findIndex(p => p.id === prayerId);
             if (idx === -1) return;
@@ -470,8 +515,6 @@
         }
 
         async function saveEdit(prayerId) {
-            if (!user) return;
-
             const idx = prayers.findIndex(p => p.id === prayerId);
             if (idx === -1) return;
 
@@ -482,17 +525,28 @@
                 return;
             }
 
-            try {
-                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'prayers', prayerId);
-                await updateDoc(docRef, { content: newContent });
-                showToast("실시간 수정 완료!");
-            } catch (error) {
-                console.error("Firestore 업데이트 에러:", error);
-                showToast("수정에 실패했습니다.");
-                renderPrayers();
+            if (isFirebaseActive) {
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'prayers', prayerId);
+                    await updateDoc(docRef, { content: newContent });
+                    showToast("동기화 수정이 저장되었습니다.");
+                } catch (error) {
+                    console.error("Firebase 수정 실패", error);
+                    saveEditLocally(idx, newContent);
+                }
+            } else {
+                saveEditLocally(idx, newContent);
             }
         }
 
+        function saveEditLocally(idx, newContent) {
+            prayers[idx].content = newContent;
+            saveAndNotifyLocal();
+            renderPrayers();
+            showToast("수정이 로컬에 보존되었습니다.");
+        }
+
+        // 삭제 전 모달 확인창 호출
         function deletePrayer(prayerId) {
             prayerIdToDelete = prayerId;
             const modal = document.getElementById('delete-confirm-modal');
@@ -507,27 +561,34 @@
             prayerIdToDelete = null;
         }
 
+        // 실제 삭제 연산 처리
         async function executeDelete() {
-            if (!user) return;
             if (prayerIdToDelete) {
-                try {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'prayers', prayerIdToDelete);
-                    await deleteDoc(docRef);
-                    showToast("기도제목이 삭제되었습니다.");
-                } catch (error) {
-                    console.error("Firestore 삭제 에러:", error);
-                    showToast("삭제를 처리할 수 없습니다.");
+                if (isFirebaseActive) {
+                    try {
+                        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'prayers', prayerIdToDelete);
+                        await deleteDoc(docRef);
+                        showToast("삭제 동기화가 반영되었습니다.");
+                    } catch (error) {
+                        console.error("Firebase 삭제 실패", error);
+                        deleteLocally(prayerIdToDelete);
+                    }
+                } else {
+                    deleteLocally(prayerIdToDelete);
                 }
             }
             closeDeleteModal();
         }
 
-        async function supportPrayer(prayerId) {
-            if (!user) {
-                showToast("서버 연결 중에는 참여할 수 없습니다.");
-                return;
-            }
+        function deleteLocally(prayerId) {
+            prayers = prayers.filter(p => p.id !== prayerId);
+            saveAndNotifyLocal();
+            renderPrayers();
+            showToast("기도제목이 로컬에서 삭제되었습니다.");
+        }
 
+        // 중보 동참 처리
+        async function supportPrayer(prayerId) {
             const idx = prayers.findIndex(p => p.id === prayerId);
             if (idx === -1) return;
 
@@ -547,19 +608,31 @@
                 showToast("중보 기도가 더해졌습니다!");
             }
 
-            try {
-                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'prayers', prayerId);
-                await updateDoc(docRef, {
-                    prayedUsers: prayedUsers,
-                    prayingCount: prayingCount
-                });
-            } catch (error) {
-                console.error("중보기도 업데이트 실패:", error);
-                showToast("동참 처리에 실패했습니다.");
+            if (isFirebaseActive) {
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'prayers', prayerId);
+                    await updateDoc(docRef, {
+                        prayedUsers: prayedUsers,
+                        prayingCount: prayingCount
+                    });
+                } catch (error) {
+                    console.error("Firebase 동참 동기화 실패", error);
+                    updateSupportLocally(idx, prayedUsers, prayingCount);
+                }
+            } else {
+                updateSupportLocally(idx, prayedUsers, prayingCount);
             }
         }
 
-        // --- 7. 화면 실시간 렌더링 ---
+        function updateSupportLocally(idx, prayedUsers, prayingCount) {
+            prayers[idx].prayedUsers = prayedUsers;
+            prayers[idx].prayingCount = prayingCount;
+            saveAndNotifyLocal();
+            renderPrayers();
+        }
+
+
+        // --- 6. 화면 실시간 렌더링 ---
         function renderPrayers() {
             const listEl = document.getElementById('prayer-list');
             listEl.innerHTML = '';
@@ -605,6 +678,7 @@
                     </div>
                 `;
 
+                // 자신이 작성한 글이면 우측 상단 수정/삭제 배치
                 if (isMyPrayer) {
                     const controls = document.createElement('div');
                     controls.id = `edit-controls-${p.id}`;
@@ -625,7 +699,7 @@
             });
         }
 
-        // 토스트 알림 유틸
+        // 토스트 출력 유틸
         function showToast(message) {
             const toast = document.getElementById('toast');
             const messageEl = document.getElementById('toast-message');
@@ -640,7 +714,7 @@
             }, 2500);
         }
 
-        // Module 스코프 함수들을 전역 window 객체에 수동 등록하여 HTML 인라인 onclick 이벤트 대응
+        // onclick 및 인라인 스크립트 연결을 위한 전역 스코프 등록
         window.randomizeVerse = randomizeVerse;
         window.changeCardBackground = changeCardBackground;
         window.copyVerseToClipboard = copyVerseToClipboard;
