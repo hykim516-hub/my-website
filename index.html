@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 믿음을 사용하라</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome (아이콘) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Noto Sans KR -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background-color: #f1f5f9; /* 연한 블루그레이 배경 */
+            letter-spacing: -0.02em;
+        }
+        /* 푸른색 그라디언트 카드 배경 */
+        .card-blue-1 { background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%); }
+        .card-blue-2 { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); }
+        .card-blue-3 { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+        .card-blue-4 { background: linear-gradient(135deg, #334155 0%, #475569 100%); }
+        
+        /* 스크롤바 커스텀 */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+<body class="text-slate-800 pb-12">
+
+    <!-- 상단 헤더 (데스크톱 대응으로 가로폭 확장) -->
+    <header class="bg-white border-b border-slate-200 py-4 px-4 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-5xl mx-auto flex items-center justify-between">
+            <span class="text-base font-black tracking-tight text-slate-900 flex items-center gap-2">
+                <i class="fa-solid fa-cross text-blue-700"></i> 2026 믿음을 사용하라
+            </span>
+            <span class="text-[11px] font-bold text-blue-700 bg-blue-50 border border-blue-100 px-2.5 py-1 rounded-full">말씀과 기도제목 나눔방</span>
+        </div>
+    </header>
+
+    <!-- 메인 영역 (PC 2단 레이아웃 반영) -->
+    <main class="max-w-5xl mx-auto px-4 mt-6">
+        
+        <!-- 반응형 12컬럼 그리드 시스템 구축 -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+            
+            <!-- 왼쪽 사이드바 (데스크톱에선 고정, 모바일에선 상단 배치) -->
+            <div class="md:col-span-5 space-y-6 md:sticky md:top-20">
+                
+                <!-- ================= 1. 말씀읽기 세션 ================= -->
+                <section class="space-y-3">
+                    <div class="flex justify-between items-center px-1">
+                        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                            <i class="fa-solid fa-book-open text-blue-600"></i> 오늘의 말씀
+                        </h2>
+                        <button onclick="randomizeVerse()" class="text-xs text-slate-400 hover:text-blue-600 flex items-center gap-1 transition">
+                            <i class="fa-solid fa-arrows-rotate text-[10px]"></i> 다른 말씀 보기
+                        </button>
+                    </div>
+
+                    <!-- 말씀 카드 -->
+                    <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
+                        <div id="verse-card" class="card-blue-1 rounded-xl p-6 text-white min-h-[180px] flex flex-col justify-between transition-all duration-500 relative overflow-hidden shadow-md">
+                            <div class="absolute -top-10 -right-10 w-32 h-32 bg-white/5 rounded-full blur-xl pointer-events-none"></div>
+
+                            <!-- 말씀 본문 -->
+                            <div class="my-auto py-2 text-center z-10">
+                                <p id="verse-text" class="text-base md:text-lg font-bold leading-relaxed mb-4 transition-all duration-300">
+                                    "여호와는 나의 목자시니 내게 부족함이 없으리로다"
+                                </p>
+                                <p id="verse-ref" class="text-xs opacity-75 tracking-wider font-normal transition-all duration-300">
+                                    — 시편 23편 1절
+                                </p>
+                            </div>
+
+                            <!-- 하단 라벨 -->
+                            <div class="flex justify-between items-center text-[10px] opacity-60 mt-2 z-10 border-t border-white/10 pt-2.5">
+                                <span class="tracking-widest">TODAY VERSE</span>
+                                <span id="verse-theme" class="bg-white/10 px-2.5 py-0.5 rounded-full font-medium text-[9px]">평안</span>
+                            </div>
+                        </div>
+
+                        <!-- 조작 도구 -->
+                        <div class="grid grid-cols-2 gap-3 mt-3">
+                            <button onclick="changeCardBackground()" class="py-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-600 text-xs font-semibold flex items-center justify-center gap-1.5 transition border border-slate-200">
+                                <i class="fa-solid fa-palette text-blue-500"></i> 배경 변경
+                            </button>
+                            <button onclick="copyVerseToClipboard()" class="py-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-600 text-xs font-semibold flex items-center justify-center gap-1.5 transition border border-slate-200">
+                                <i class="fa-solid fa-copy text-blue-500"></i> 말씀 복사
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ================= 2. 기도제목 작성 세션 ================= -->
+                <section class="space-y-3">
+                    <div class="flex justify-between items-center px-1">
+                        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                            <i class="fa-solid fa-pen-to-square text-blue-600"></i> 기도제목 올리기
+                        </h2>
+                    </div>
+
+                    <!-- 신규 기도제목 간편 작성 상자 -->
+                    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 space-y-4">
+                        <div class="flex gap-3">
+                            <div class="w-1/2 relative">
+                                <input type="text" id="prayer-author" placeholder="닉네임" class="w-full px-3 py-2.5 text-xs font-medium rounded-lg bg-slate-50 border border-slate-200 focus:bg-white focus:outline-none focus:border-blue-500 transition-all">
+                            </div>
+                            <div class="w-1/2 relative">
+                                <select id="prayer-category" class="w-full px-3 py-2.5 text-xs font-medium rounded-lg bg-slate-50 border border-slate-200 focus:bg-white focus:outline-none focus:border-blue-500 transition-all">
+                                    <option value="개인기도">개인기도</option>
+                                    <option value="가정">가정/가족</option>
+                                    <option value="교회">교회/예배</option>
+                                    <option value="치유">치유/건강</option>
+                                    <option value="기타">기타제목</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <textarea id="prayer-content" rows="4" placeholder="기도제목을 상세히 적어주세요. 함께 마음을 모아 기도하겠습니다." class="w-full p-3.5 text-xs font-medium rounded-lg bg-slate-50 border border-slate-200 focus:bg-white focus:outline-none focus:border-blue-500 resize-none leading-relaxed placeholder-slate-400 transition-all"></textarea>
+                        </div>
+                        <button onclick="submitPrayer()" class="w-full py-3 bg-blue-700 hover:bg-blue-800 text-white font-bold rounded-lg text-xs transition tracking-wider shadow-md shadow-blue-700/10">
+                            기도제목 올리기
+                        </button>
+                    </div>
+                </section>
+            </div>
+
+            <!-- 오른쪽 콘텐츠 영역 (기도제목 피드 리스트) -->
+            <div class="md:col-span-7 space-y-4">
+                <div class="flex justify-between items-center px-1">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                        <i class="fa-solid fa-heart-pulse text-rose-500"></i> 함께 짊어지는 기도 나눔
+                    </h2>
+                </div>
+
+                <!-- 기도 제목 리스트가 실시간 나열되는 카드목록 -->
+                <div id="prayer-list" class="space-y-3">
+                    <!-- 동적으로 추가되는 영역 -->
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- 커스텀 삭제 확인 모달 (iframe confirm 대체용) -->
+    <div id="delete-confirm-modal" class="fixed inset-0 bg-slate-900/60 hidden z-50 flex items-center justify-center p-4 backdrop-blur-sm transition-all duration-200">
+        <div class="bg-white rounded-2xl max-w-xs w-full p-5 shadow-xl border border-slate-200 space-y-4">
+            <div class="text-center">
+                <p class="text-sm font-bold text-slate-800">기도제목 삭제</p>
+                <p class="text-xs text-slate-500 mt-1">이 기도제목을 정말 삭제하시겠습니까?</p>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="closeDeleteModal()" class="w-1/2 py-2 text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg font-semibold transition">취소</button>
+                <button id="modal-delete-confirm-btn" class="w-1/2 py-2 text-xs bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition">삭제</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 알림용 심플 토스트 팝업 -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white px-5 py-3 rounded-full text-xs font-semibold shadow-md opacity-0 pointer-events-none transition-all duration-300 flex items-center gap-2 border border-slate-800">
+        <span id="toast-message" class="text-slate-200">알림 메시지</span>
+    </div>
+
+    <!-- ================= [SCRIPT] ================= -->
+    <script>
+        // --- 1. 성경 말씀 데이터베이스 (15선) ---
+        const bibleVerses = [
+            { id: 1, text: "여호와는 나의 목자시니 내게 부족함이 없으리로다", ref: "시편 23편 1절", theme: "평안" },
+            { id: 2, text: "아무 것도 염려하지 말고 다만 모든 일에 기도와 간구로, 너희 구할 것을 감사함으로 하나님께 아뢰라", ref: "빌립보서 4장 6절", theme: "기도" },
+            { id: 3, text: "두려워하지 말라 내가 너와 함께 함이라 놀라지 말라 나는 네 하나님이 됨이라 내가 너를 굳세게 하리라 참으로 너를 도와 주리라", ref: "이사야 41장 10절", theme: "믿음" },
+            { id: 4, text: "수고하고 무거운 짐 진 자들아 다 내게로 오라 내가 너희를 쉬게 하리라", ref: "마태복음 11장 28절", theme: "안식" },
+            { id: 5, text: "내게 능력 주시는 자 안에서 내가 모든 것을 할 수 있느니라", ref: "빌립보서 4장 13절", theme: "믿음" },
+            { id: 6, text: "평안을 너희에게 끼치노니 곧 나의 평안을 너희에게 주노라 내가 너희에게 주는 것은 세상이 주는 것과 같지 아니하니라 너희는 마음에 근심하지도 말고 두려워하지도 말라", ref: "요한복음 14장 27절", theme: "평안" },
+            { id: 7, text: "여호와를 바라는 너희들아 강하고 담대하라", ref: "시편 31편 24절", theme: "담대함" },
+            { id: 8, text: "우리가 알거니와 하나님을 사랑하는 자 곧 그의 뜻대로 부르심을 입은 자들에게는 모든 것이 합력하여 선을 이루느니라", ref: "로마서 8장 28절", theme: "인도" },
+            { id: 9, text: "하나님이 우리에게 주신 것은 두려워하는 마음이 아니요 오직 능력과 사랑과 절제하는 마음이니", ref: "디모데후서 1장 7절", theme: "평안" },
+            { id: 10, text: "구하라 그리하면 너희에게 주실 것이요 찾으라 그리하면 찾아낼 것이요 문을 두드리라 그리하면 너희에게 열릴 것이니", ref: "마태복음 7장 7절", theme: "기도" },
+            { id: 11, text: "여호와께 감사하라 그는 선하시며 그의 인자하심이 영원함이로다", ref: "시편 136편 1절", theme: "감사" },
+            { id: 12, text: "항상 기뻐하라 쉬지 말고 기도하라 범사에 감사하라 이것이 그리스도 예수 안에서 너희를 향하신 하나님의 뜻이니라", ref: "데살로니가전서 5장 16-18절", theme: "은혜" },
+            { id: 13, text: "너는 마음을 다하여 여호와를 신뢰하고 네 명철을 의지하지 말라 너는 범사에 그를 인정하라 그리하면 네 길을 지도하시리라", ref: "잠언 3장 5-6절", theme: "인도" },
+            { id: 14, text: "여호와의 자비와 긍휼이 무궁하시므로 우리가 진멸되지 아니함이니이다 이것들이 아침마다 새로우니 주의 성실하심이 크시도소이다", ref: "예레미야 애가 3장 22-23절", theme: "소망" },
+            { id: 15, text: "너희 중에 누구든지 지혜가 부족하거든 모든 사람에게 후히 주시고 꾸짖지 아니하시는 하나님께 구하라 그리하면 주시리라", ref: "야고보서 1장 5절", theme: "인도" }
+        ];
+
+        // 푸른빛 그라디언트 카드 배경 목록
+        const backgroundClasses = [
+            'card-blue-1', 'card-blue-2', 'card-blue-3', 'card-blue-4'
+        ];
+
+        let currentVerseIndex = 0;
+        let currentBgIndex = 0; 
+        let prayers = [];
+        let prayerIdToDelete = null; // 현재 삭제 대기 중인 기도제목 ID
+        
+        let userId = localStorage.getItem('graceshare_simple_uid');
+        if (!userId) {
+            userId = 'user_' + Math.random().toString(36).substring(2, 11);
+            localStorage.setItem('graceshare_simple_uid', userId);
+        }
+
+        // --- 2. 초기화 ---
+        window.onload = function() {
+            randomizeVerse();
+            loadPrayers();
+            renderPrayers();
+        };
+
+        // --- 3. 말씀 카드 제어 ---
+        function randomizeVerse() {
+            const randomIndex = Math.floor(Math.random() * bibleVerses.length);
+            currentVerseIndex = randomIndex;
+            const verse = bibleVerses[randomIndex];
+
+            const textEl = document.getElementById('verse-text');
+            const refEl = document.getElementById('verse-ref');
+            const themeEl = document.getElementById('verse-theme');
+
+            textEl.style.opacity = '0';
+            refEl.style.opacity = '0';
+
+            setTimeout(() => {
+                textEl.innerText = `"${verse.text}"`;
+                refEl.innerText = `— ${verse.ref}`;
+                themeEl.innerText = verse.theme;
+
+                textEl.style.opacity = '1';
+                refEl.style.opacity = '1';
+            }, 150);
+        }
+
+        // 카드 배경 변경
+        function changeCardBackground() {
+            const card = document.getElementById('verse-card');
+            card.classList.remove(backgroundClasses[currentBgIndex]);
+            currentBgIndex = (currentBgIndex + 1) % backgroundClasses.length;
+            card.classList.add(backgroundClasses[currentBgIndex]);
+        }
+
+        // 클립보드 복사
+        function copyVerseToClipboard() {
+            const verse = bibleVerses[currentVerseIndex];
+            const textToCopy = `"${verse.text}" (${verse.ref})`;
+
+            const dummy = document.createElement("textarea");
+            document.body.appendChild(dummy);
+            dummy.value = textToCopy;
+            dummy.select();
+            document.execCommand("copy");
+            document.body.removeChild(dummy);
+
+            showToast("말씀이 복사되었습니다.");
+        }
+
+
+        // --- 4. 기도제목 나눔 로직 ---
+        function loadPrayers() {
+            const savedData = localStorage.getItem('graceshare_simple_prayers');
+            if (savedData) {
+                prayers = JSON.parse(savedData);
+            } else {
+                prayers = [
+                    {
+                        id: 'p1',
+                        author: '믿음충만',
+                        userId: 'other_u1',
+                        category: '치유',
+                        content: '장기 치료로 인해 육체적으로, 또 정서적으로 많이 지쳐있는 가족이 있습니다. 지치지 않고 소망의 빛을 마음에 품고 하루하루 일어날 용기를 얻기를 간청합니다.',
+                        prayingCount: 5,
+                        prayedUsers: [],
+                        date: '2026-05-17'
+                    },
+                    {
+                        id: 'p2',
+                        author: '지혜요청',
+                        userId: 'other_u2',
+                        category: '개인기도',
+                        content: '중요한 결정과 기로 앞에 서서 흔들리고 있습니다. 세상의 소음에 마음을 뺏기지 않고 주님이 주시는 고요한 울림을 식별할 수 있는 깊은 통찰력과 지혜를 갖추도록 기도 부탁드립니다.',
+                        prayingCount: 2,
+                        prayedUsers: [],
+                        date: '2026-05-16'
+                    }
+                ];
+                savePrayersToStorage();
+            }
+        }
+
+        function savePrayersToStorage() {
+            localStorage.setItem('graceshare_simple_prayers', JSON.stringify(prayers));
+        }
+
+        // 기도제목 등록
+        function submitPrayer() {
+            const authorInput = document.getElementById('prayer-author');
+            const categorySelect = document.getElementById('prayer-category');
+            const contentTextarea = document.getElementById('prayer-content');
+
+            const author = authorInput.value.trim();
+            const category = categorySelect.value;
+            const content = contentTextarea.value.trim();
+
+            if (!author) {
+                showToast("닉네임을 입력하세요.");
+                return;
+            }
+            if (!content) {
+                showToast("기도제목을 입력하세요.");
+                return;
+            }
+
+            const now = new Date();
+            const dateString = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+            const newPrayer = {
+                id: 'prayer_' + Date.now(),
+                author: author,
+                userId: userId,
+                category: category,
+                content: content,
+                prayingCount: 0,
+                prayedUsers: [],
+                date: dateString
+            };
+
+            prayers.unshift(newPrayer);
+            savePrayersToStorage();
+            renderPrayers();
+
+            authorInput.value = '';
+            contentTextarea.value = '';
+
+            showToast("기도제목이 등록되었습니다.");
+        }
+
+        // 기도제목 수정 폼 열기
+        function editPrayer(prayerId) {
+            const idx = prayers.findIndex(p => p.id === prayerId);
+            if (idx === -1) return;
+
+            const prayer = prayers[idx];
+
+            // 카드의 본문 부분을 텍스트 필드로 치환
+            const contentContainer = document.getElementById(`content-container-${prayerId}`);
+            const editControls = document.getElementById(`edit-controls-${prayerId}`);
+            
+            contentContainer.innerHTML = `
+                <div class="space-y-2 mt-1">
+                    <textarea id="edit-textarea-${prayerId}" rows="3" class="w-full p-2.5 text-xs rounded-lg bg-slate-50 border border-slate-300 focus:bg-white focus:outline-none focus:border-blue-500 resize-none leading-relaxed">${prayer.content}</textarea>
+                    <div class="flex justify-end gap-1.5">
+                        <button onclick="cancelEdit('${prayerId}')" class="px-2.5 py-1 text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-md font-semibold transition">취소</button>
+                        <button onclick="saveEdit('${prayerId}')" class="px-2.5 py-1 text-[11px] bg-blue-600 hover:bg-blue-700 text-white rounded-md font-semibold transition">저장</button>
+                    </div>
+                </div>
+            `;
+            
+            // 기존 상단 우측 수정/삭제 버튼을 일시 비활성화
+            if (editControls) editControls.classList.add('hidden');
+        }
+
+        // 수정 취소
+        function cancelEdit(prayerId) {
+            renderPrayers();
+        }
+
+        // 수정사항 저장
+        function saveEdit(prayerId) {
+            const idx = prayers.findIndex(p => p.id === prayerId);
+            if (idx === -1) return;
+
+            const newContent = document.getElementById(`edit-textarea-${prayerId}`).value.trim();
+
+            if (!newContent) {
+                showToast("기도제목을 입력하세요.");
+                return;
+            }
+
+            prayers[idx].content = newContent;
+            savePrayersToStorage();
+            renderPrayers();
+            showToast("기도제목이 수정되었습니다.");
+        }
+
+        // 커스텀 모달 열기 (삭제 준비)
+        function deletePrayer(prayerId) {
+            prayerIdToDelete = prayerId;
+            const modal = document.getElementById('delete-confirm-modal');
+            modal.classList.remove('hidden');
+            
+            // 모달 안 버튼에 이벤트 연결
+            document.getElementById('modal-delete-confirm-btn').onclick = executeDelete;
+        }
+
+        // 커스텀 모달 닫기
+        function closeDeleteModal() {
+            const modal = document.getElementById('delete-confirm-modal');
+            modal.classList.add('hidden');
+            prayerIdToDelete = null;
+        }
+
+        // 실제 삭제 실행
+        function executeDelete() {
+            if (prayerIdToDelete) {
+                prayers = prayers.filter(p => p.id !== prayerIdToDelete);
+                savePrayersToStorage();
+                renderPrayers();
+                showToast("기도제목이 삭제되었습니다.");
+            }
+            closeDeleteModal();
+        }
+
+        // 중보 동참 기능
+        function supportPrayer(prayerId) {
+            const idx = prayers.findIndex(p => p.id === prayerId);
+            if (idx === -1) return;
+
+            const p = prayers[idx];
+            if (!p.prayedUsers) p.prayedUsers = [];
+
+            const userIdx = p.prayedUsers.indexOf(userId);
+
+            if (userIdx > -1) {
+                p.prayedUsers.splice(userIdx, 1);
+                p.prayingCount = Math.max(0, p.prayingCount - 1);
+                showToast("기도 동참을 취소했습니다.");
+            } else {
+                p.prayedUsers.push(userId);
+                p.prayingCount = (p.prayingCount || 0) + 1;
+                showToast("중보 기도가 더해졌습니다.");
+            }
+
+            savePrayersToStorage();
+            renderPrayers();
+        }
+
+        // 화면 렌더링
+        function renderPrayers() {
+            const listEl = document.getElementById('prayer-list');
+            listEl.innerHTML = '';
+
+            if (prayers.length === 0) {
+                listEl.innerHTML = `
+                    <div class="bg-white rounded-xl p-8 text-center border border-slate-200">
+                        <p class="text-xs text-slate-500 font-medium">등록된 기도제목이 없습니다.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            prayers.forEach(p => {
+                const hasPrayed = p.prayedUsers && p.prayedUsers.includes(userId);
+                const isMyPrayer = p.userId === userId;
+
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-xl p-5 border border-slate-200 shadow-sm relative transition-all hover:border-slate-300";
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between text-[11px] mb-3 pr-12">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-blue-950 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">${p.category}</span>
+                            <span class="font-bold text-slate-600">${p.author}</span>
+                        </div>
+                        <span class="text-slate-400 text-[10px]">${p.date}</span>
+                    </div>
+
+                    <!-- 본문이 출력되는 내부 가변 영역 -->
+                    <div id="content-container-${p.id}" class="mb-4">
+                        <p class="text-slate-700 text-xs leading-relaxed whitespace-pre-wrap font-normal">
+                            ${p.content}
+                        </p>
+                    </div>
+
+                    <div class="flex justify-between items-center border-t border-slate-100 pt-3">
+                        <button onclick="supportPrayer('${p.id}')" class="flex items-center gap-1.5 text-xs ${hasPrayed ? 'text-blue-600 font-bold' : 'text-slate-400 hover:text-slate-700'} transition">
+                            <i class="${hasPrayed ? 'fa-solid fa-heart' : 'fa-regular fa-heart'} text-sm"></i>
+                            <span>함께 기도해요</span>
+                            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-full ${hasPrayed ? 'bg-blue-50 text-blue-600 border border-blue-100' : 'bg-slate-100 text-slate-400'}">${p.prayingCount || 0}</span>
+                        </button>
+                    </div>
+                `;
+
+                // 자신이 쓴 기도제목에만 수정 및 삭제 제어반(우측 상단) 렌더링
+                if (isMyPrayer) {
+                    const controls = document.createElement('div');
+                    controls.id = `edit-controls-${p.id}`;
+                    controls.className = "absolute top-4 right-4 flex items-center gap-1.5 text-slate-300";
+                    
+                    controls.innerHTML = `
+                        <button onclick="editPrayer('${p.id}')" class="hover:text-blue-600 transition p-1" title="수정">
+                            <i class="fa-solid fa-pen text-[11px]"></i>
+                        </button>
+                        <button onclick="deletePrayer('${p.id}')" class="hover:text-rose-500 transition p-1" title="삭제">
+                            <i class="fa-solid fa-trash-can text-[11px]"></i>
+                        </button>
+                    `;
+                    card.appendChild(controls);
+                }
+
+                listEl.appendChild(card);
+            });
+        }
+
+        // 토스트 출력 유틸
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const messageEl = document.getElementById('toast-message');
+
+            messageEl.innerText = message;
+            toast.style.opacity = '1';
+            toast.style.transform = 'translate(-50%, -8px)';
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translate(-50%, 0)';
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
