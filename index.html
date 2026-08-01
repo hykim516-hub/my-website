@@ -1,281 +1,594 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DEV.PORTFOLIO 2026</title>
+    <title>홍길동 | Frontend Developer Portfolio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: #f1f5f9;
+            background-color: #f8fafc;
             letter-spacing: -0.02em;
         }
-        .card-blue-1 { background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%); }
-        .card-blue-2 { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); }
-        .card-blue-3 { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
-        .card-blue-4 { background: linear-gradient(135deg, #334155 0%, #475569 100%); }
-        ::-webkit-scrollbar { width: 6px; }
+        .hero-gradient {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f2027 100%);
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+        }
+        ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
     </style>
 </head>
-<body class="text-slate-800 pb-12">
+<body class="text-slate-800 antialiased selection:bg-blue-500 selection:text-white">
 
-<!-- 상단 헤더 -->
-<header class="bg-white border-b border-slate-200 py-4 px-4 sticky top-0 z-40 shadow-sm">
-    <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-        <span class="text-base font-black tracking-tight text-slate-900 flex items-center gap-2">
-            <i class="fa-solid fa-code text-blue-600"></i> DEV.PORTFOLIO
-        </span>
-        <div class="flex items-center gap-2">
-            <span class="text-[11px] font-bold text-slate-600 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-full">
-                Frontend Developer
-            </span>
-        </div>
-    </div>
-</header>
+    <!-- 상단 네비게이션 바 -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/80 transition-all duration-300">
+        <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+            <a href="#" class="text-lg font-black tracking-tight text-slate-900 flex items-center gap-2">
+                <span class="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center text-sm font-bold shadow-md shadow-blue-500/20">DEV</span>
+                <span>HONG.DEV</span>
+            </a>
 
-<!-- 메인 컨텐츠 -->
-<main class="max-w-5xl mx-auto px-4 mt-6">
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+            <!-- 데스크톱 메뉴 -->
+            <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600">
+                <a href="#about" class="hover:text-blue-600 transition">About</a>
+                <a href="#skills" class="hover:text-blue-600 transition">Skills</a>
+                <a href="#projects" class="hover:text-blue-600 transition">Projects</a>
+                <a href="#experience" class="hover:text-blue-600 transition">Experience</a>
+                <a href="#guestbook" class="hover:text-blue-600 transition">Guestbook</a>
+            </nav>
 
-        <!-- 왼쪽 사이드바 -->
-        <div class="md:col-span-5 space-y-6 md:sticky md:top-24">
+            <div class="hidden md:flex items-center gap-3">
+                <a href="#contact" class="px-4 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition">
+                    Contact Me
+                </a>
+            </div>
 
-            <!-- 비전 카드 -->
-            <section class="space-y-3">
-                <div class="flex justify-between items-center px-1">
-                    <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-                        <i class="fa-solid fa-terminal text-blue-600"></i> DEVELOPER MOTTO
-                    </h2>
-                    <button onclick="randomizeQuote()" class="text-xs text-slate-400 hover:text-blue-600 flex items-center gap-1 transition">
-                        <i class="fa-solid fa-arrows-rotate text-[10px]"></i> 다른 슬로건
-                    </button>
-                </div>
-                <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
-                    <div id="quote-card" class="card-blue-1 rounded-xl p-6 text-white min-h-[180px] flex flex-col justify-between transition-all duration-500 relative overflow-hidden shadow-md">
-                        <div class="absolute -top-10 -right-10 w-32 h-32 bg-white/5 rounded-full blur-xl pointer-events-none"></div>
-                        <div class="my-auto py-2 text-center z-10">
-                            <p id="quote-text" class="text-base md:text-lg font-bold leading-relaxed mb-4 transition-all duration-300">
-                                "사용자 경험을 최우선으로 생각하는 반응형 & 동적 웹을 설계합니다."
-                            </p>
-                            <p id="quote-ref" class="text-xs opacity-75 tracking-wider font-normal transition-all duration-300">
-                                - Core Engineering Values
-                            </p>
-                        </div>
-                        <div class="flex justify-between items-center text-[10px] opacity-60 mt-2 z-10 border-t border-white/10 pt-2.5">
-                            <span class="tracking-widest">FOCUS AREA</span>
-                            <span id="quote-theme" class="bg-white/10 px-2.5 py-0.5 rounded-full font-medium text-[9px]">Frontend Architecture</span>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-3 mt-3">
-                        <button onclick="changeCardBackground()" class="py-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-600 text-xs font-semibold flex items-center justify-center gap-1.5 transition border border-slate-200">
-                            <i class="fa-solid fa-palette text-blue-500"></i> 배경 변경
-                        </button>
-                        <button onclick="copyContact()" class="py-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-600 text-xs font-semibold flex items-center justify-center gap-1.5 transition border border-slate-200">
-                            <i class="fa-solid fa-copy text-blue-500"></i> 이메일 복사
-                        </button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 방명록 입력 -->
-            <section class="space-y-3">
-                <div class="px-1">
-                    <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-                        <i class="fa-solid fa-pen-to-square text-blue-600"></i> 방명록 작성
-                    </h2>
-                </div>
-                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 space-y-4">
-                    <div class="flex gap-3">
-                        <div class="w-1/2">
-                            <input type="text" id="guest-author" placeholder="작성자/소속" maxlength="12"
-                                class="w-full px-3 py-2.5 text-xs font-medium rounded-lg bg-slate-50 border border-slate-200 focus:bg-white focus:outline-none focus:border-blue-500 transition-all">
-                        </div>
-                        <div class="w-1/2">
-                            <select id="guest-category" class="w-full px-3 py-2.5 text-xs font-medium rounded-lg bg-slate-50 border border-slate-200 focus:bg-white focus:outline-none focus:border-blue-500 transition-all">
-                                <option value="응원메시지">응원/인사</option>
-                                <option value="프로젝트문의">프로젝트 문의</option>
-                                <option value="기술피드백">기술 피드백</option>
-                            </select>
-                        </div>
-                    </div>
-                    <textarea id="guest-content" rows="4" placeholder="메시지를 남겨주세요."
-                        class="w-full p-3.5 text-xs font-medium rounded-lg bg-slate-50 border border-slate-200 focus:bg-white focus:outline-none focus:border-blue-500 resize-none leading-relaxed placeholder-slate-400 transition-all"></textarea>
-                    <button onclick="submitGuestbook()"
-                        class="w-full py-3 bg-blue-700 hover:bg-blue-800 text-white font-bold rounded-lg text-xs transition tracking-wider shadow-md shadow-blue-700/10">
-                        메시지 등록
-                    </button>
-                </div>
-            </section>
+            <!-- 모바일 메뉴 버튼 -->
+            <button onclick="toggleMobileMenu()" class="md:hidden text-slate-700 focus:outline-none p-2">
+                <i class="fa-solid fa-bars text-xl"></i>
+            </button>
         </div>
 
-        <!-- 오른쪽 메인 영역 -->
-        <div class="md:col-span-7 space-y-6">
+        <!-- 모바일 드롭다운 메뉴 -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-b border-slate-200 px-6 py-4 space-y-3">
+            <a href="#about" onclick="toggleMobileMenu()" class="block text-sm font-semibold text-slate-600 hover:text-blue-600">About</a>
+            <a href="#skills" onclick="toggleMobileMenu()" class="block text-sm font-semibold text-slate-600 hover:text-blue-600">Skills</a>
+            <a href="#projects" onclick="toggleMobileMenu()" class="block text-sm font-semibold text-slate-600 hover:text-blue-600">Projects</a>
+            <a href="#experience" onclick="toggleMobileMenu()" class="block text-sm font-semibold text-slate-600 hover:text-blue-600">Experience</a>
+            <a href="#guestbook" onclick="toggleMobileMenu()" class="block text-sm font-semibold text-slate-600 hover:text-blue-600">Guestbook</a>
+            <a href="#contact" onclick="toggleMobileMenu()" class="block text-center w-full py-2.5 text-xs font-bold text-white bg-blue-600 rounded-lg">Contact Me</a>
+        </div>
+    </header>
 
-            <!-- 기술 스택 -->
-            <section class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 space-y-3">
-                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-                    <i class="fa-solid fa-layer-group text-blue-600"></i> SKILL STACK
-                </h3>
-                <div class="flex flex-wrap gap-2">
-                    <span class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-100 text-slate-700 border border-slate-200">HTML5 / CSS3</span>
-                    <span class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-100 text-slate-700 border border-slate-200">JavaScript (ES6+)</span>
-                    <span class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-blue-50 text-blue-700 border border-blue-100">Tailwind CSS</span>
-                    <span class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100">LocalStorage API</span>
-                </div>
-            </section>
+    <!-- 히어로 섹션 (HERO) -->
+    <section class="hero-gradient text-white pt-32 pb-20 md:pt-40 md:pb-28 relative overflow-hidden">
+        <div class="absolute -top-24 -right-24 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute bottom-0 left-10 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-            <!-- 방명록 목록 -->
-            <div class="space-y-4">
-                <div class="flex justify-between items-center px-1">
-                    <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-                        <i class="fa-solid fa-comments text-blue-600"></i> GUESTBOOK FEED
-                    </h2>
-                    <span id="feed-count" class="text-[10px] font-bold text-slate-400 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full">0건</span>
+        <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-12 gap-12 items-center relative z-10">
+            <div class="md:col-span-7 space-y-6">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 text-blue-300 text-xs font-semibold border border-white/10">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    프론트엔드 개발자 포트폴리오
                 </div>
-                <div id="feed-list" class="space-y-3">
-                    <!-- 스크립트에서 동적 생성 -->
+                <h1 class="text-3xl md:text-5xl font-black tracking-tight leading-tight">
+                    사용자 경험과 성능을 최우선으로 생각하는 <span class="text-blue-400">개발자 홍길동</span>입니다.
+                </h1>
+                <p class="text-slate-300 text-sm md:text-base leading-relaxed font-normal max-w-xl">
+                    웹 표준과 반응형 UI 구현에 깊은 관심이 있으며, 유지보수가 쉬운 모듈식 코드와 직관적인 인터페이스 설계를 지향합니다.
+                </p>
+                <div class="flex flex-wrap items-center gap-4 pt-2">
+                    <a href="#projects" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-blue-600/30 transition flex items-center gap-2">
+                        프로젝트 보기 <i class="fa-solid fa-arrow-down text-[10px]"></i>
+                    </a>
+                    <a href="https://github.com" target="_blank" class="px-6 py-3 bg-white/10 hover:bg-white/20 text-white text-xs font-bold rounded-xl border border-white/15 transition flex items-center gap-2">
+                        <i class="fa-brands fa-github text-sm"></i> GitHub
+                    </a>
                 </div>
             </div>
 
+            <!-- 하이라이트 요약 카드 -->
+            <div class="md:col-span-5">
+                <div class="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-md space-y-4">
+                    <div class="flex justify-between items-center border-b border-white/10 pb-4">
+                        <span class="text-xs text-slate-400 font-medium">연차</span>
+                        <span class="text-sm font-bold text-white">3년차 개발자</span>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-white/10 pb-4">
+                        <span class="text-xs text-slate-400 font-medium">주요 기술</span>
+                        <span class="text-sm font-bold text-blue-400">JavaScript, React, Tailwind</span>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-white/10 pb-4">
+                        <span class="text-xs text-slate-400 font-medium">진행 프로젝트</span>
+                        <span class="text-sm font-bold text-white">12+ 건</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-slate-400 font-medium">관심 분야</span>
+                        <span class="text-sm font-bold text-emerald-400">웹 성능 최적화, Design System</span>
+                    </div>
+                </div>
+            </div>
         </div>
+    </section>
 
+    <!-- ABOUT ME 섹션 -->
+    <section id="about" class="py-20 bg-white border-b border-slate-200/60">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center max-w-2xl mx-auto mb-16 space-y-2">
+                <h2 class="text-xs font-bold text-blue-600 tracking-wider uppercase">About Me</h2>
+                <p class="text-2xl md:text-3xl font-extrabold text-slate-900">문제 해결을 즐기는 엔지니어</p>
+                <div class="w-12 h-1 bg-blue-600 mx-auto rounded-full mt-4"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100 space-y-3 hover:shadow-md transition">
+                    <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-lg font-bold">
+                        <i class="fa-solid fa-code"></i>
+                    </div>
+                    <h3 class="font-bold text-base text-slate-900">깨끗한 코드 작성</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        가독성이 높고 재사용이 가능한 컴포넌트 구조를 설계하여 팀원과의 협업 생산성을 높입니다.
+                    </p>
+                </div>
+                <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100 space-y-3 hover:shadow-md transition">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg font-bold">
+                        <i class="fa-solid fa-gauge-high"></i>
+                    </div>
+                    <h3 class="font-bold text-base text-slate-900">성능 최적화</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        렌더링 병목 현상을 파악하고, 번들 사이즈 감소 및 비동기 로딩으로 빠르게 반응하는 웹을 만듭니다.
+                    </p>
+                </div>
+                <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100 space-y-3 hover:shadow-md transition">
+                    <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center text-lg font-bold">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <h3 class="font-bold text-base text-slate-900">사용자 중심 UX</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">
+                        기획자 및 디자이너의 의도를 이해하고 접근성과 가용성을 배려한 인터페이스를 완성합니다.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SKILLS 섹션 -->
+    <section id="skills" class="py-20 bg-slate-50 border-b border-slate-200/60">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center max-w-2xl mx-auto mb-16 space-y-2">
+                <h2 class="text-xs font-bold text-blue-600 tracking-wider uppercase">Tech Stack</h2>
+                <p class="text-2xl md:text-3xl font-extrabold text-slate-900">기술 스택 & 도구</p>
+                <div class="w-12 h-1 bg-blue-600 mx-auto rounded-full mt-4"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Frontend -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-laptop-code text-blue-600"></i> Frontend
+                    </h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-50 text-blue-700 border border-blue-100">HTML5 / CSS3</span>
+                        <span class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-50 text-blue-700 border border-blue-100">JavaScript (ES6+)</span>
+                        <span class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-50 text-blue-700 border border-blue-100">TypeScript</span>
+                        <span class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-50 text-blue-700 border border-blue-100">React</span>
+                    </div>
+                </div>
+
+                <!-- Styling -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-paint-brush text-purple-600"></i> Styling
+                    </h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-purple-50 text-purple-700 border border-purple-100">Tailwind CSS</span>
+                        <span class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-purple-50 text-purple-700 border border-purple-100">Styled Components</span>
+                        <span class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-purple-50 text-purple-700 border border-purple-100">Sass / SCSS</span>
+                    </div>
+                </div>
+
+                <!-- State & Tools -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-boxes-stacked text-emerald-600"></i> State & APIs
+                    </h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100">Redux Toolkit</span>
+                        <span class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100">Zustand</span>
+                        <span class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100">REST API</span>
+                    </div>
+                </div>
+
+                <!-- Workflow -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-screwdriver-wrench text-amber-600"></i> Workflow
+                    </h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-amber-50 text-amber-700 border border-amber-100">Git / GitHub</span>
+                        <span class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-amber-50 text-amber-700 border border-amber-100">Vite / Webpack</span>
+                        <span class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-amber-50 text-amber-700 border border-amber-100">Figma</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROJECTS 섹션 -->
+    <section id="projects" class="py-20 bg-white border-b border-slate-200/60">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center max-w-2xl mx-auto mb-12 space-y-2">
+                <h2 class="text-xs font-bold text-blue-600 tracking-wider uppercase">Portfolio</h2>
+                <p class="text-2xl md:text-3xl font-extrabold text-slate-900">주요 프로젝트</p>
+                <div class="w-12 h-1 bg-blue-600 mx-auto rounded-full mt-4"></div>
+            </div>
+
+            <!-- 필터 버튼 -->
+            <div class="flex justify-center gap-2 mb-10">
+                <button onclick="filterProjects('all')" class="project-tab-btn active px-4 py-2 text-xs font-bold rounded-full bg-blue-600 text-white transition">All</button>
+                <button onclick="filterProjects('web')" class="project-tab-btn px-4 py-2 text-xs font-bold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition">Web App</button>
+                <button onclick="filterProjects('design')" class="project-tab-btn px-4 py-2 text-xs font-bold rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition">UI Component</button>
+            </div>
+
+            <!-- 프로젝트 그리드 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="project-grid">
+
+                <!-- 프로젝트 1 -->
+                <div class="project-card web bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col">
+                    <div class="h-48 bg-slate-800 relative flex items-center justify-center text-white overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-tr from-blue-900 to-slate-900 opacity-90"></div>
+                        <i class="fa-solid fa-chart-line text-5xl text-blue-400 opacity-40"></i>
+                        <span class="absolute top-4 right-4 bg-blue-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">Web App</span>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
+                        <div class="space-y-2">
+                            <h3 class="text-lg font-bold text-slate-900">실시간 데이터 대시보드</h3>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                API 데이터를 실시간 차트로 시각화하고 위젯 커스터마이징을 지원하는 관리자 대시보드 시스템.
+                            </p>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="text-[10px] font-medium bg-slate-100 text-slate-700 px-2 py-0.5 rounded">React</span>
+                                <span class="text-[10px] font-medium bg-slate-100 text-slate-700 px-2 py-0.5 rounded">Tailwind CSS</span>
+                                <span class="text-[10px] font-medium bg-slate-100 text-slate-700 px-2 py-0.5 rounded">Chart.js</span>
+                            </div>
+                            <div class="flex items-center gap-3 pt-2 border-t border-slate-100">
+                                <a href="https://github.com" target="_blank" class="text-xs font-bold text-slate-600 hover:text-blue-600 flex items-center gap-1 transition">
+                                    <i class="fa-brands fa-github"></i> Code
+                                </a>
+                                <a href="#" onclick="alert('데모 페이지 링크를 연결하세요.')" class="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 transition">
+                                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Demo
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 프로젝트 2 -->
+                <div class="project-card design bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col">
+                    <div class="h-48 bg-slate-800 relative flex items-center justify-center text-white overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-tr from-purple-900 to-slate-900 opacity-90"></div>
+                        <i class="fa-solid fa-cubes text-5xl text-purple-400 opacity-40"></i>
+                        <span class="absolute top-4 right-4 bg-purple-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">UI Component</span>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
+                        <div class="space-y-2">
+                            <h3 class="text-lg font-bold text-slate-900">반응형 컴포넌트 라이브러리</h3>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                웹 접근성을 준수하는 모듈식 UI 컴포넌트 모음. 다크 모드 및 커스텀 테마 변수를 완벽 지원합니다.
+                            </p>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="text-[10px] font-medium bg-slate-100 text-slate-700 px-2 py-0.5 rounded">TypeScript</span>
+                                <span class="text-[10px] font-medium bg-slate-100 text-slate-700 px-2 py-0.5 rounded">Storybook</span>
+                                <span class="text-[10px] font-medium bg-slate-100 text-slate-700 px-2 py-0.5 rounded">Tailwind</span>
+                            </div>
+                            <div class="flex items-center gap-3 pt-2 border-t border-slate-100">
+                                <a href="https://github.com" target="_blank" class="text-xs font-bold text-slate-600 hover:text-blue-600 flex items-center gap-1 transition">
+                                    <i class="fa-brands fa-github"></i> Code
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 프로젝트 3 -->
+                <div class="project-card web bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col">
+                    <div class="h-48 bg-slate-800 relative flex items-center justify-center text-white overflow-hidden">
+                        <div class="absolute inset-0 bg-gradient-to-tr from-emerald-900 to-slate-900 opacity-90"></div>
+                        <i class="fa-solid fa-cart-shopping text-5xl text-emerald-400 opacity-40"></i>
+                        <span class="absolute top-4 right-4 bg-emerald-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">Web App</span>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
+                        <div class="space-y-2">
+                            <h3 class="text-lg font-bold text-slate-900">E-Commerce 웹 플랫폼</h3>
+                            <p class="text-xs text-slate-600 leading-relaxed">
+                                장바구니, 결제 프로세스, 상품 검색 필터링 기능을 갖춘 SPA 기반 커머스 프론트엔드 서비스.
+                            </p>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="text-[10px] font-medium bg-slate-100 text-slate-700 px-2 py-0.5 rounded">JavaScript</span>
+                                <span class="text-[10px] font-medium bg-slate-100 text-slate-700 px-2 py-0.5 rounded">REST API</span>
+                                <span class="text-[10px] font-medium bg-slate-100 text-slate-700 px-2 py-0.5 rounded">CSS Grid</span>
+                            </div>
+                            <div class="flex items-center gap-3 pt-2 border-t border-slate-100">
+                                <a href="https://github.com" target="_blank" class="text-xs font-bold text-slate-600 hover:text-blue-600 flex items-center gap-1 transition">
+                                    <i class="fa-brands fa-github"></i> Code
+                                </a>
+                                <a href="#" onclick="alert('데모 페이지 링크를 연결하세요.')" class="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 transition">
+                                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Demo
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- EXPERIENCE & EDUCATION 섹션 -->
+    <section id="experience" class="py-20 bg-slate-50 border-b border-slate-200/60">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="text-center max-w-2xl mx-auto mb-16 space-y-2">
+                <h2 class="text-xs font-bold text-blue-600 tracking-wider uppercase">History</h2>
+                <p class="text-2xl md:text-3xl font-extrabold text-slate-900">경력 및 활동</p>
+                <div class="w-12 h-1 bg-blue-600 mx-auto rounded-full mt-4"></div>
+            </div>
+
+            <div class="relative border-l-2 border-slate-200 ml-4 md:ml-32 space-y-10">
+
+                <!-- 타임라인 1 -->
+                <div class="relative pl-8">
+                    <span class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-blue-600 border-4 border-white"></span>
+                    <div class="md:absolute md:-left-36 md:top-1 text-xs font-bold text-slate-400 mb-1 md:mb-0 md:text-right md:w-28">
+                        2024 - PRESENT
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-2">
+                        <h3 class="text-base font-bold text-slate-900">(주) 테크 컴퍼니 — 프론트엔드 개발자</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            - 메인 SaaS 서비스 프론트엔드 아키텍처 개편<br>
+                            - 웹 렌더링 속도 35% 개선 및 공통 컴포넌트 모듈화
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 타임라인 2 -->
+                <div class="relative pl-8">
+                    <span class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-slate-300 border-4 border-white"></span>
+                    <div class="md:absolute md:-left-36 md:top-1 text-xs font-bold text-slate-400 mb-1 md:mb-0 md:text-right md:w-28">
+                        2023 - 2024
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-2">
+                        <h3 class="text-base font-bold text-slate-900">웹 개발 부트캠프 수료</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            - 6개월간 풀스택 웹 애플리케이션 프로그래밍 과정 이수<br>
+                            - 팀 프로젝트 2건의 프론트엔드 리드 담당
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- GUESTBOOK (방명록) 섹션 -->
+    <section id="guestbook" class="py-20 bg-white border-b border-slate-200/60">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="text-center max-w-2xl mx-auto mb-12 space-y-2">
+                <h2 class="text-xs font-bold text-blue-600 tracking-wider uppercase">Guestbook</h2>
+                <p class="text-2xl md:text-3xl font-extrabold text-slate-900">방명록</p>
+                <div class="w-12 h-1 bg-blue-600 mx-auto rounded-full mt-4"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+                <!-- 방명록 입력 폼 -->
+                <div class="md:col-span-5 bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-4">
+                    <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-pen-to-square text-blue-600"></i> 메시지 남기기
+                    </h3>
+                    <div class="space-y-3">
+                        <input type="text" id="guest-author" placeholder="이름 / 소속" maxlength="15"
+                            class="w-full px-3.5 py-2.5 text-xs font-medium rounded-xl bg-white border border-slate-200 focus:outline-none focus:border-blue-500 transition">
+                        <textarea id="guest-content" rows="4" placeholder="응원의 메시지나 문의사항을 남겨주세요."
+                            class="w-full p-3.5 text-xs font-medium rounded-xl bg-white border border-slate-200 focus:outline-none focus:border-blue-500 resize-none leading-relaxed transition"></textarea>
+                        <button onclick="submitGuestbook()" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs transition shadow-md shadow-blue-600/20">
+                            방명록 등록
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 방명록 리스트 -->
+                <div class="md:col-span-7 space-y-3">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xs font-bold text-slate-500">등록된 방명록</span>
+                        <span id="guest-count" class="text-[11px] font-semibold text-blue-600 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-100">0건</span>
+                    </div>
+                    <div id="guest-list" class="space-y-3 max-h-[380px] overflow-y-auto pr-1">
+                        <!-- 동적 생성 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT 섹션 -->
+    <section id="contact" class="py-20 bg-slate-900 text-white">
+        <div class="max-w-4xl mx-auto px-6 text-center space-y-8">
+            <div class="space-y-3">
+                <h2 class="text-xs font-bold text-blue-400 tracking-wider uppercase">Contact</h2>
+                <p class="text-3xl md:text-4xl font-black">함께 일할 준비가 되어있습니다.</p>
+                <p class="text-slate-400 text-xs md:text-sm max-w-md mx-auto leading-relaxed">
+                    새로운 프로젝트 제안, 채용 문의 또는 궁금한 점이 있다면 언제든 편하게 연락해 주세요.
+                </p>
+            </div>
+
+            <div class="inline-flex flex-col sm:flex-row items-center gap-4 bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-md">
+                <div class="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-xl text-xs font-medium text-slate-200">
+                    <i class="fa-solid fa-envelope text-blue-400"></i>
+                    <span id="email-text">developer@example.com</span>
+                </div>
+                <button onclick="copyEmail()" class="w-full sm:w-auto px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition shadow-lg shadow-blue-600/30">
+                    이메일 주소 복사
+                </button>
+            </div>
+
+            <div class="pt-8 border-t border-white/10 flex justify-center gap-6 text-slate-400">
+                <a href="https://github.com" target="_blank" class="hover:text-white transition text-lg"><i class="fa-brands fa-github"></i></a>
+                <a href="https://linkedin.com" target="_blank" class="hover:text-white transition text-lg"><i class="fa-brands fa-linkedin"></i></a>
+                <a href="https://velog.io" target="_blank" class="hover:text-white transition text-lg"><i class="fa-solid fa-blog"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 푸터 -->
+    <footer class="bg-slate-950 py-6 text-center text-xs text-slate-500 border-t border-white/5">
+        <div class="max-w-6xl mx-auto px-6">
+            © 2026 Hong Gil-Dong. All rights reserved. Designed with Tailwind CSS.
+        </div>
+    </footer>
+
+    <!-- 토스트 알림 -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white px-5 py-3 rounded-full text-xs font-semibold shadow-2xl opacity-0 pointer-events-none transition-all duration-300 flex items-center gap-2 border border-slate-700 whitespace-nowrap">
+        <span class="text-emerald-400"><i class="fa-solid fa-circle-check"></i></span>
+        <span id="toast-message">알림 메시지</span>
     </div>
-</main>
 
-<!-- 토스트 알림 -->
-<div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white px-5 py-3 rounded-full text-xs font-semibold shadow-lg opacity-0 pointer-events-none transition-all duration-300 flex items-center gap-2 whitespace-nowrap">
-    <span class="text-emerald-400"><i class="fa-solid fa-circle-check"></i></span>
-    <span id="toast-message">알림</span>
-</div>
-
-<script>
-    const slogans = [
-        { text: "사용자 경험을 최우선으로 생각하는 반응형 & 동적 웹을 설계합니다.", ref: "Core Engineering Values", theme: "Frontend Architecture" },
-        { text: "확장 가능하고 유지보수가 용이한 모듈식 코드를 지향합니다.", ref: "Clean Code Standard", theme: "Software Design" },
-        { text: "직관적이고 매끄러운 UI/UX 인터페이스를 구현합니다.", ref: "Interactive Web Paradigm", theme: "UI/UX Design" }
-    ];
-
-    const bgClasses = ['card-blue-1', 'card-blue-2', 'card-blue-3', 'card-blue-4'];
-    let currentSloganIdx = 0;
-    let currentBgIdx = 0;
-    let feedItems = [];
-
-    window.onload = function() {
-        // 로컬 스토리지에서 방명록 데이터 불러오기
-        const saved = localStorage.getItem('portfolio_pure_local_feed');
-        if (saved) {
-            try { feedItems = JSON.parse(saved); } catch(e) { feedItems = []; }
-        } else {
-            feedItems = [
-                { id: '1', author: '방문자', category: '응원메시지', content: '깔끔한 UI 구성이 인상적입니다!', date: '2026-08-01' }
-            ];
-            saveLocal();
-        }
-        renderFeed();
-    };
-
-    function saveLocal() {
-        localStorage.setItem('portfolio_pure_local_feed', JSON.stringify(feedItems));
-    }
-
-    function randomizeQuote() {
-        currentSloganIdx = (currentSloganIdx + 1) % slogans.length;
-        const item = slogans[currentSloganIdx];
-        document.getElementById('quote-text').innerText = `"${item.text}"`;
-        document.getElementById('quote-ref').innerText = `- ${item.ref}`;
-        document.getElementById('quote-theme').innerText = item.theme;
-    }
-
-    function changeCardBackground() {
-        const card = document.getElementById('quote-card');
-        card.classList.remove(bgClasses[currentBgIdx]);
-        currentBgIdx = (currentBgIdx + 1) % bgClasses.length;
-        card.classList.add(bgClasses[currentBgIdx]);
-    }
-
-    function copyContact() {
-        navigator.clipboard.writeText("developer@example.com");
-        showToast("이메일 주소가 복사되었습니다.");
-    }
-
-    function submitGuestbook() {
-        const author = document.getElementById('guest-author').value.trim();
-        const category = document.getElementById('guest-category').value;
-        const content = document.getElementById('guest-content').value.trim();
-
-        if (!author || !content) {
-            showToast('작성자와 내용을 입력해주세요.');
-            return;
+    <script>
+        // 모바일 메뉴 토글
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
         }
 
-        const now = new Date();
-        const dateStr = now.toISOString().split('T')[0];
+        // 프로젝트 카테고리 필터링
+        function filterProjects(category) {
+            const cards = document.querySelectorAll('.project-card');
+            const btns = document.querySelectorAll('.project-tab-btn');
 
-        const newItem = {
-            id: 'item_' + Date.now(),
-            author, category, content,
-            date: dateStr
+            btns.forEach(btn => {
+                btn.classList.remove('bg-blue-600', 'text-white', 'active');
+                btn.classList.add('bg-slate-100', 'text-slate-600');
+            });
+            event.target.classList.remove('bg-slate-100', 'text-slate-600');
+            event.target.classList.add('bg-blue-600', 'text-white', 'active');
+
+            cards.forEach(card => {
+                if (category === 'all' || card.classList.contains(category)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // 방명록 스토리지 조작 (동기화 없이 순수 LocalStorage)
+        let guestbookItems = [];
+
+        window.onload = function() {
+            const saved = localStorage.getItem('standard_portfolio_guestbook');
+            if (saved) {
+                try { guestbookItems = JSON.parse(saved); } catch(e) { guestbookItems = []; }
+            } else {
+                guestbookItems = [
+                    { id: '1', author: '채용 담당자', content: '포트폴리오 구성과 프로젝트 정리가 깔끔하네요!', date: '2026-08-01' }
+                ];
+                saveLocal();
+            }
+            renderGuestbook();
         };
 
-        feedItems.unshift(newItem);
-        saveLocal();
-        renderFeed();
-
-        document.getElementById('guest-author').value = '';
-        document.getElementById('guest-content').value = '';
-        showToast('메시지가 등록되었습니다.');
-    }
-
-    function deleteGuestbook(id) {
-        feedItems = feedItems.filter(item => item.id !== id);
-        saveLocal();
-        renderFeed();
-        showToast('메시지가 삭제되었습니다.');
-    }
-
-    function renderFeed() {
-        const container = document.getElementById('feed-list');
-        document.getElementById('feed-count').innerText = `${feedItems.length}건`;
-
-        if (feedItems.length === 0) {
-            container.innerHTML = `<div class="bg-white rounded-xl p-8 text-center border border-slate-200 text-xs text-slate-400">작성된 방명록이 없습니다.</div>`;
-            return;
+        function saveLocal() {
+            localStorage.setItem('standard_portfolio_guestbook', JSON.stringify(guestbookItems));
         }
 
-        container.innerHTML = feedItems.map(item => `
-            <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm space-y-2">
-                <div class="flex justify-between items-center">
-                    <div class="flex items-center gap-2">
+        function submitGuestbook() {
+            const author = document.getElementById('guest-author').value.trim();
+            const content = document.getElementById('guest-content').value.trim();
+
+            if (!author || !content) {
+                showToast('이름과 내용을 입력해주세요.');
+                return;
+            }
+
+            const now = new Date();
+            const dateStr = now.toISOString().split('T')[0];
+
+            const newItem = {
+                id: 'gb_' + Date.now(),
+                author,
+                content,
+                date: dateStr
+            };
+
+            guestbookItems.unshift(newItem);
+            saveLocal();
+            renderGuestbook();
+
+            document.getElementById('guest-author').value = '';
+            document.getElementById('guest-content').value = '';
+            showToast('방명록이 등록되었습니다.');
+        }
+
+        function deleteGuestbook(id) {
+            guestbookItems = guestbookItems.filter(item => item.id !== id);
+            saveLocal();
+            renderGuestbook();
+            showToast('메시지가 삭제되었습니다.');
+        }
+
+        function renderGuestbook() {
+            const listContainer = document.getElementById('guest-list');
+            document.getElementById('guest-count').innerText = `${guestbookItems.length}건`;
+
+            if (guestbookItems.length === 0) {
+                listContainer.innerHTML = `<div class="bg-slate-50 border border-slate-200 rounded-xl p-6 text-center text-xs text-slate-400">남겨진 방명록이 없습니다.</div>`;
+                return;
+            }
+
+            listContainer.innerHTML = guestbookItems.map(item => `
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/80 space-y-1">
+                    <div class="flex justify-between items-center">
                         <span class="font-bold text-xs text-slate-800">${escapeHtml(item.author)}</span>
-                        <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200 font-medium">${item.category}</span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] text-slate-400">${item.date}</span>
+                            <button onclick="deleteGuestbook('${item.id}')" class="text-slate-300 hover:text-red-500 transition text-xs">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-[10px] text-slate-400">${item.date}</span>
-                        <button onclick="deleteGuestbook('${item.id}')" class="text-slate-300 hover:text-red-500 transition text-xs">
-                            <i class="fa-solid fa-xmark"></i>
-                        </button>
-                    </div>
+                    <p class="text-xs text-slate-600 leading-relaxed">${escapeHtml(item.content)}</p>
                 </div>
-                <p class="text-xs text-slate-600 leading-relaxed">${escapeHtml(item.content)}</p>
-            </div>
-        `).join('');
-    }
+            `).join('');
+        }
 
-    function escapeHtml(str) {
-        return (str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    }
+        function copyEmail() {
+            const email = document.getElementById('email-text').innerText;
+            navigator.clipboard.writeText(email);
+            showToast('이메일 주소가 복사되었습니다.');
+        }
 
-    function showToast(msg) {
-        const t = document.getElementById('toast');
-        document.getElementById('toast-message').innerText = msg;
-        t.style.opacity = '1';
-        setTimeout(() => { t.style.opacity = '0'; }, 2500);
-    }
-</script>
+        function escapeHtml(str) {
+            return (str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = msg;
+            t.style.opacity = '1';
+            setTimeout(() => { t.style.opacity = '0'; }, 2500);
+        }
+    </script>
 </body>
 </html>
