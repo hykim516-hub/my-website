@@ -383,46 +383,6 @@
         </div>
     </section>
 
-    <!-- GUESTBOOK (방명록) 섹션 -->
-    <section id="guestbook" class="py-20 bg-white border-b border-slate-200/60">
-        <div class="max-w-4xl mx-auto px-6">
-            <div class="text-center max-w-2xl mx-auto mb-12 space-y-2">
-                <h2 class="text-xs font-bold text-blue-600 tracking-wider uppercase">Guestbook</h2>
-                <p class="text-2xl md:text-3xl font-extrabold text-slate-900">방명록</p>
-                <div class="w-12 h-1 bg-blue-600 mx-auto rounded-full mt-4"></div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
-                <!-- 방명록 입력 폼 -->
-                <div class="md:col-span-5 bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-4">
-                    <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
-                        <i class="fa-solid fa-pen-to-square text-blue-600"></i> 메시지 남기기
-                    </h3>
-                    <div class="space-y-3">
-                        <input type="text" id="guest-author" placeholder="이름 / 소속" maxlength="15"
-                            class="w-full px-3.5 py-2.5 text-xs font-medium rounded-xl bg-white border border-slate-200 focus:outline-none focus:border-blue-500 transition">
-                        <textarea id="guest-content" rows="4" placeholder="응원의 메시지나 문의사항을 남겨주세요."
-                            class="w-full p-3.5 text-xs font-medium rounded-xl bg-white border border-slate-200 focus:outline-none focus:border-blue-500 resize-none leading-relaxed transition"></textarea>
-                        <button onclick="submitGuestbook()" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs transition shadow-md shadow-blue-600/20">
-                            방명록 등록
-                        </button>
-                    </div>
-                </div>
-
-                <!-- 방명록 리스트 -->
-                <div class="md:col-span-7 space-y-3">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-xs font-bold text-slate-500">등록된 방명록</span>
-                        <span id="guest-count" class="text-[11px] font-semibold text-blue-600 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-100">0건</span>
-                    </div>
-                    <div id="guest-list" class="space-y-3 max-h-[380px] overflow-y-auto pr-1">
-                        <!-- 동적 생성 -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- CONTACT 섹션 -->
     <section id="contact" class="py-20 bg-slate-900 text-white">
         <div class="max-w-4xl mx-auto px-6 text-center space-y-8">
