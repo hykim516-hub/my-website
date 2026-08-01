@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026 믿음을 사용하라</title>
+    <title>DEV.PORTFOLIO 2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
@@ -20,828 +20,262 @@
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
-        .pulse-dot { animation: pulse-anim 1.5s ease-in-out infinite; }
-        @keyframes pulse-anim {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(0.85); }
-        }
     </style>
 </head>
 <body class="text-slate-800 pb-12">
 
-<!-- ====================================================
-     [STEP 1] 아래 FIREBASE_CONFIG 에 본인의 Firebase 정보를 붙여넣으세요.
-     Firebase Console > 프로젝트 설정 > 웹 앱 > firebaseConfig 복사
-     ==================================================== -->
-<script>
-    window.FIREBASE_CONFIG = {
-        apiKey: "여기에_apiKey_붙여넣기",
-        authDomain: "여기에_authDomain_붙여넣기",
-        projectId: "여기에_projectId_붙여넣기",
-        storageBucket: "여기에_storageBucket_붙여넣기",
-        messagingSenderId: "여기에_messagingSenderId_붙여넣기",
-        appId: "여기에_appId_붙여넣기"
-    };
-    // 컬렉션 경로 (변경 불필요)
-    window.APP_COLLECTION = "faith2026_prayers";
-</script>
-
-<!-- 헤더 -->
+<!-- 상단 헤더 -->
 <header class="bg-white border-b border-slate-200 py-4 px-4 sticky top-0 z-40 shadow-sm">
     <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
         <span class="text-base font-black tracking-tight text-slate-900 flex items-center gap-2">
-            <i class="fa-solid fa-cross text-blue-700"></i> 2026 믿음을 사용하라
+            <i class="fa-solid fa-code text-blue-600"></i> DEV.PORTFOLIO
         </span>
-        <div class="flex flex-wrap items-center gap-2 justify-center">
-            <!-- 연결 상태 배지 -->
-            <span id="sync-badge" class="text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-100 px-2.5 py-1 rounded-full flex items-center gap-1.5">
-                <span id="sync-dot" class="w-1.5 h-1.5 rounded-full bg-amber-500 pulse-dot"></span>
-                <span id="sync-text">서버 연결 중...</span>
+        <div class="flex items-center gap-2">
+            <span class="text-[11px] font-bold text-slate-600 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-full">
+                Frontend Developer
             </span>
-            <!-- Firebase 설정 안내 버튼 -->
-            <button onclick="openConfigModal()" class="text-[10px] font-bold text-slate-600 bg-white border border-slate-200 hover:border-blue-500 hover:text-blue-600 px-2.5 py-1 rounded-full flex items-center gap-1 transition shadow-sm">
-                <i class="fa-solid fa-gear text-blue-500"></i> Firebase 설정
-            </button>
-            <span class="text-[11px] font-bold text-blue-700 bg-blue-50 border border-blue-100 px-2.5 py-1 rounded-full">말씀과 기도제목 나눔방</span>
         </div>
     </div>
 </header>
 
-<!-- 메인 -->
+<!-- 메인 컨텐츠 -->
 <main class="max-w-5xl mx-auto px-4 mt-6">
     <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
 
-        <!-- 왼쪽 패널 -->
+        <!-- 왼쪽 사이드바 -->
         <div class="md:col-span-5 space-y-6 md:sticky md:top-24">
 
-            <!-- 말씀 카드 섹션 -->
+            <!-- 비전 카드 -->
             <section class="space-y-3">
                 <div class="flex justify-between items-center px-1">
                     <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-                        <i class="fa-solid fa-book-open text-blue-600"></i> 오늘의 말씀
+                        <i class="fa-solid fa-terminal text-blue-600"></i> DEVELOPER MOTTO
                     </h2>
-                    <button onclick="randomizeVerse()" class="text-xs text-slate-400 hover:text-blue-600 flex items-center gap-1 transition">
-                        <i class="fa-solid fa-arrows-rotate text-[10px]"></i> 다른 말씀 보기
+                    <button onclick="randomizeQuote()" class="text-xs text-slate-400 hover:text-blue-600 flex items-center gap-1 transition">
+                        <i class="fa-solid fa-arrows-rotate text-[10px]"></i> 다른 슬로건
                     </button>
                 </div>
                 <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
-                    <div id="verse-card" class="card-blue-1 rounded-xl p-6 text-white min-h-[180px] flex flex-col justify-between transition-all duration-500 relative overflow-hidden shadow-md">
+                    <div id="quote-card" class="card-blue-1 rounded-xl p-6 text-white min-h-[180px] flex flex-col justify-between transition-all duration-500 relative overflow-hidden shadow-md">
                         <div class="absolute -top-10 -right-10 w-32 h-32 bg-white/5 rounded-full blur-xl pointer-events-none"></div>
                         <div class="my-auto py-2 text-center z-10">
-                            <p id="verse-text" class="text-base md:text-lg font-bold leading-relaxed mb-4 transition-all duration-300">
-                                "여호와는 나의 목자시니 내게 부족함이 없으리로다"
+                            <p id="quote-text" class="text-base md:text-lg font-bold leading-relaxed mb-4 transition-all duration-300">
+                                "사용자 경험을 최우선으로 생각하는 반응형 & 동적 웹을 설계합니다."
                             </p>
-                            <p id="verse-ref" class="text-xs opacity-75 tracking-wider font-normal transition-all duration-300">
-                                - 시편 23편 1절
+                            <p id="quote-ref" class="text-xs opacity-75 tracking-wider font-normal transition-all duration-300">
+                                - Core Engineering Values
                             </p>
                         </div>
                         <div class="flex justify-between items-center text-[10px] opacity-60 mt-2 z-10 border-t border-white/10 pt-2.5">
-                            <span class="tracking-widest">TODAY VERSE</span>
-                            <span id="verse-theme" class="bg-white/10 px-2.5 py-0.5 rounded-full font-medium text-[9px]">평안</span>
+                            <span class="tracking-widest">FOCUS AREA</span>
+                            <span id="quote-theme" class="bg-white/10 px-2.5 py-0.5 rounded-full font-medium text-[9px]">Frontend Architecture</span>
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-3 mt-3">
                         <button onclick="changeCardBackground()" class="py-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-600 text-xs font-semibold flex items-center justify-center gap-1.5 transition border border-slate-200">
                             <i class="fa-solid fa-palette text-blue-500"></i> 배경 변경
                         </button>
-                        <button onclick="copyVerseToClipboard()" class="py-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-600 text-xs font-semibold flex items-center justify-center gap-1.5 transition border border-slate-200">
-                            <i class="fa-solid fa-copy text-blue-500"></i> 말씀 복사
+                        <button onclick="copyContact()" class="py-2.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-600 text-xs font-semibold flex items-center justify-center gap-1.5 transition border border-slate-200">
+                            <i class="fa-solid fa-copy text-blue-500"></i> 이메일 복사
                         </button>
                     </div>
                 </div>
             </section>
 
-            <!-- 기도제목 작성 -->
+            <!-- 방명록 입력 -->
             <section class="space-y-3">
                 <div class="px-1">
                     <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-                        <i class="fa-solid fa-pen-to-square text-blue-600"></i> 기도제목 올리기
+                        <i class="fa-solid fa-pen-to-square text-blue-600"></i> 방명록 작성
                     </h2>
                 </div>
                 <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 space-y-4">
                     <div class="flex gap-3">
                         <div class="w-1/2">
-                            <input type="text" id="prayer-author" placeholder="닉네임" maxlength="12"
+                            <input type="text" id="guest-author" placeholder="작성자/소속" maxlength="12"
                                 class="w-full px-3 py-2.5 text-xs font-medium rounded-lg bg-slate-50 border border-slate-200 focus:bg-white focus:outline-none focus:border-blue-500 transition-all">
                         </div>
                         <div class="w-1/2">
-                            <select id="prayer-category" class="w-full px-3 py-2.5 text-xs font-medium rounded-lg bg-slate-50 border border-slate-200 focus:bg-white focus:outline-none focus:border-blue-500 transition-all">
-                                <option value="개인기도">개인기도</option>
-                                <option value="가정">가정/가족</option>
-                                <option value="교회">교회/예배</option>
-                                <option value="치유">치유/건강</option>
-                                <option value="기타">기타제목</option>
+                            <select id="guest-category" class="w-full px-3 py-2.5 text-xs font-medium rounded-lg bg-slate-50 border border-slate-200 focus:bg-white focus:outline-none focus:border-blue-500 transition-all">
+                                <option value="응원메시지">응원/인사</option>
+                                <option value="프로젝트문의">프로젝트 문의</option>
+                                <option value="기술피드백">기술 피드백</option>
                             </select>
                         </div>
                     </div>
-                    <textarea id="prayer-content" rows="4" placeholder="기도제목을 상세히 적어주세요. 함께 마음을 모아 기도하겠습니다."
+                    <textarea id="guest-content" rows="4" placeholder="메시지를 남겨주세요."
                         class="w-full p-3.5 text-xs font-medium rounded-lg bg-slate-50 border border-slate-200 focus:bg-white focus:outline-none focus:border-blue-500 resize-none leading-relaxed placeholder-slate-400 transition-all"></textarea>
-                    <button onclick="submitPrayer()" id="submit-btn"
-                        class="w-full py-3 bg-blue-700 hover:bg-blue-800 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold rounded-lg text-xs transition tracking-wider shadow-md shadow-blue-700/10">
-                        기도제목 올리기
+                    <button onclick="submitGuestbook()"
+                        class="w-full py-3 bg-blue-700 hover:bg-blue-800 text-white font-bold rounded-lg text-xs transition tracking-wider shadow-md shadow-blue-700/10">
+                        메시지 등록
                     </button>
                 </div>
             </section>
         </div>
 
-        <!-- 오른쪽 피드 -->
-        <div class="md:col-span-7 space-y-4">
-            <div class="flex justify-between items-center px-1">
-                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-                    <i class="fa-solid fa-heart-pulse text-rose-500"></i> 함께 짊어지는 기도 나눔
-                </h2>
-                <span id="prayer-count" class="text-[10px] font-bold text-slate-400 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full">0건</span>
-            </div>
-            <div id="prayer-list" class="space-y-3">
-                <div class="bg-white rounded-xl p-8 text-center border border-slate-200">
-                    <div class="flex flex-col items-center gap-2">
-                        <i class="fa-solid fa-spinner fa-spin text-blue-400 text-lg"></i>
-                        <p class="text-xs text-slate-400 font-medium">기도제목을 불러오는 중...</p>
-                    </div>
+        <!-- 오른쪽 메인 영역 -->
+        <div class="md:col-span-7 space-y-6">
+
+            <!-- 기술 스택 -->
+            <section class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 space-y-3">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                    <i class="fa-solid fa-layer-group text-blue-600"></i> SKILL STACK
+                </h3>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-100 text-slate-700 border border-slate-200">HTML5 / CSS3</span>
+                    <span class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-slate-100 text-slate-700 border border-slate-200">JavaScript (ES6+)</span>
+                    <span class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-blue-50 text-blue-700 border border-blue-100">Tailwind CSS</span>
+                    <span class="px-2.5 py-1 text-xs font-semibold rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100">LocalStorage API</span>
+                </div>
+            </section>
+
+            <!-- 방명록 목록 -->
+            <div class="space-y-4">
+                <div class="flex justify-between items-center px-1">
+                    <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                        <i class="fa-solid fa-comments text-blue-600"></i> GUESTBOOK FEED
+                    </h2>
+                    <span id="feed-count" class="text-[10px] font-bold text-slate-400 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full">0건</span>
+                </div>
+                <div id="feed-list" class="space-y-3">
+                    <!-- 스크립트에서 동적 생성 -->
                 </div>
             </div>
+
         </div>
 
     </div>
 </main>
 
-<!-- 삭제 확인 모달 -->
-<div id="delete-confirm-modal" class="fixed inset-0 bg-slate-900/60 hidden z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-    <div class="bg-white rounded-2xl max-w-xs w-full p-5 shadow-xl border border-slate-200 space-y-4">
-        <div class="text-center">
-            <div class="w-10 h-10 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-3">
-                <i class="fa-solid fa-trash-can text-red-500"></i>
-            </div>
-            <p class="text-sm font-bold text-slate-800">기도제목 삭제</p>
-            <p class="text-xs text-slate-500 mt-1">이 기도제목을 정말 삭제하시겠습니까?<br>삭제 후 복구할 수 없습니다.</p>
-        </div>
-        <div class="flex gap-2">
-            <button onclick="closeDeleteModal()" class="w-1/2 py-2.5 text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg font-semibold transition">취소</button>
-            <button id="modal-delete-confirm-btn" class="w-1/2 py-2.5 text-xs bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition">삭제</button>
-        </div>
-    </div>
-</div>
-
-<!-- Firebase 설정 모달 -->
-<div id="config-modal" class="fixed inset-0 bg-slate-900/60 hidden z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl border border-slate-200 space-y-4 max-h-[90vh] overflow-y-auto">
-        <div class="flex justify-between items-start">
-            <div>
-                <p class="text-sm font-bold text-slate-800 flex items-center gap-1.5">
-                    <i class="fa-solid fa-cloud text-blue-600"></i> Firebase 실시간 동기화 설정
-                </p>
-                <p class="text-xs text-slate-500 mt-1 leading-relaxed">
-                    PC와 모바일 전 기기에서 실시간 동기화하려면 Firebase 설정이 필요합니다.
-                </p>
-            </div>
-            <button onclick="closeConfigModal()" class="text-slate-400 hover:text-slate-600 ml-4 flex-shrink-0">
-                <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
-        </div>
-
-        <!-- 설정 가이드 -->
-        <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 space-y-2">
-            <p class="text-[11px] font-bold text-blue-800">설정 방법 (5분 소요)</p>
-            <ol class="text-[11px] text-blue-700 space-y-1 list-decimal list-inside leading-relaxed">
-                <li>console.firebase.google.com 에서 새 프로젝트 생성</li>
-                <li>Firestore Database 생성 (테스트 모드 선택)</li>
-                <li>Authentication &gt; 익명(Anonymous) 로그인 활성화</li>
-                <li>프로젝트 설정 &gt; 웹 앱 추가 &gt; firebaseConfig 복사</li>
-                <li>아래 입력창에 JSON 붙여넣기 후 저장</li>
-                <li>모든 기기에서 동일한 HTML 파일 사용</li>
-            </ol>
-        </div>
-
-        <div class="space-y-2">
-            <label class="block text-[11px] font-bold text-slate-600">Firebase 설정 JSON</label>
-            <textarea id="firebase-config-input" rows="9" placeholder='{
-  "apiKey": "AIzaSy...",
-  "authDomain": "your-project.firebaseapp.com",
-  "projectId": "your-project-id",
-  "storageBucket": "your-project.appspot.com",
-  "messagingSenderId": "123456789",
-  "appId": "1:123456789:web:abcdef"
-}' class="w-full p-3 text-[11px] font-mono rounded-lg bg-slate-50 border border-slate-200 focus:bg-white focus:outline-none focus:border-blue-500 resize-none leading-relaxed placeholder-slate-400 transition-all"></textarea>
-            <p class="text-[10px] text-slate-400">* 한 번 저장하면 이 기기에서는 새로고침해도 자동 연결됩니다.</p>
-        </div>
-
-        <div id="config-status" class="hidden"></div>
-
-        <div class="flex gap-2">
-            <button onclick="resetConfig()" class="w-1/3 py-2.5 text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg font-semibold transition">초기화</button>
-            <button onclick="saveConfig()" class="w-2/3 py-2.5 text-xs bg-blue-700 hover:bg-blue-800 text-white rounded-lg font-semibold transition shadow-md">저장 및 동기화 활성화</button>
-        </div>
-    </div>
-</div>
-
-<!-- 토스트 -->
+<!-- 토스트 알림 -->
 <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white px-5 py-3 rounded-full text-xs font-semibold shadow-lg opacity-0 pointer-events-none transition-all duration-300 flex items-center gap-2 whitespace-nowrap">
-    <span id="toast-icon" class="text-emerald-400"><i class="fa-solid fa-circle-check"></i></span>
+    <span class="text-emerald-400"><i class="fa-solid fa-circle-check"></i></span>
     <span id="toast-message">알림</span>
 </div>
 
-<script type="module">
-    import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import {
-        getFirestore, collection, doc,
-        addDoc, updateDoc, deleteDoc,
-        onSnapshot, serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-    // =============================================
-    // 1. 성경 말씀 데이터
-    // =============================================
-    const bibleVerses = [
-        { text: "여호와는 나의 목자시니 내게 부족함이 없으리로다", ref: "시편 23편 1절", theme: "평안" },
-        { text: "아무 것도 염려하지 말고 다만 모든 일에 기도와 간구로, 너희 구할 것을 감사함으로 하나님께 아뢰라", ref: "빌립보서 4장 6절", theme: "기도" },
-        { text: "두려워하지 말라 내가 너와 함께 함이라 놀라지 말라 나는 네 하나님이 됨이라 내가 너를 굳세게 하리라 참으로 너를 도와 주리라", ref: "이사야 41장 10절", theme: "믿음" },
-        { text: "수고하고 무거운 짐 진 자들아 다 내게로 오라 내가 너희를 쉬게 하리라", ref: "마태복음 11장 28절", theme: "안식" },
-        { text: "내게 능력 주시는 자 안에서 내가 모든 것을 할 수 있느니라", ref: "빌립보서 4장 13절", theme: "믿음" },
-        { text: "너희는 마음에 근심하지도 말고 두려워하지도 말라", ref: "요한복음 14장 27절", theme: "평안" },
-        { text: "여호와를 바라는 너희들아 강하고 담대하라", ref: "시편 31편 24절", theme: "담대함" },
-        { text: "하나님을 사랑하는 자 곧 그의 뜻대로 부르심을 입은 자들에게는 모든 것이 합력하여 선을 이루느니라", ref: "로마서 8장 28절", theme: "인도" },
-        { text: "하나님이 우리에게 주신 것은 두려워하는 마음이 아니요 오직 능력과 사랑과 절제하는 마음이니", ref: "디모데후서 1장 7절", theme: "평안" },
-        { text: "구하라 그리하면 너희에게 주실 것이요 찾으라 그리하면 찾아낼 것이요 문을 두드리라 그리하면 너희에게 열릴 것이니", ref: "마태복음 7장 7절", theme: "기도" },
-        { text: "항상 기뻐하라 쉬지 말고 기도하라 범사에 감사하라", ref: "데살로니가전서 5장 16-18절", theme: "은혜" },
-        { text: "너는 마음을 다하여 여호와를 신뢰하고 네 명철을 의지하지 말라 너는 범사에 그를 인정하라 그리하면 네 길을 지도하시리라", ref: "잠언 3장 5-6절", theme: "인도" },
-        { text: "이것들이 아침마다 새로우니 주의 성실하심이 크시도소이다", ref: "예레미야 애가 3장 23절", theme: "소망" },
-        { text: "여호와께 감사하라 그는 선하시며 그의 인자하심이 영원함이로다", ref: "시편 136편 1절", theme: "감사" },
-        { text: "지혜가 부족하거든 모든 사람에게 후히 주시고 꾸짖지 아니하시는 하나님께 구하라 그리하면 주시리라", ref: "야고보서 1장 5절", theme: "인도" }
+<script>
+    const slogans = [
+        { text: "사용자 경험을 최우선으로 생각하는 반응형 & 동적 웹을 설계합니다.", ref: "Core Engineering Values", theme: "Frontend Architecture" },
+        { text: "확장 가능하고 유지보수가 용이한 모듈식 코드를 지향합니다.", ref: "Clean Code Standard", theme: "Software Design" },
+        { text: "직관적이고 매끄러운 UI/UX 인터페이스를 구현합니다.", ref: "Interactive Web Paradigm", theme: "UI/UX Design" }
     ];
 
     const bgClasses = ['card-blue-1', 'card-blue-2', 'card-blue-3', 'card-blue-4'];
-    let currentVerseIdx = 0;
+    let currentSloganIdx = 0;
     let currentBgIdx = 0;
-    let prayers = [];
-    let prayerIdToDelete = null;
-    let db = null;
-    let auth = null;
-    let isCloudActive = false;
-    let unsubscribeListener = null;
+    let feedItems = [];
 
-    // 기기 고유 ID (새로고침해도 유지)
-    let localUserId = localStorage.getItem('faith2026_uid');
-    if (!localUserId) {
-        localUserId = 'u_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-        localStorage.setItem('faith2026_uid', localUserId);
-    }
-    let userId = localUserId;
-
-    // 동일 기기 다중 탭 동기화 채널
-    let syncChannel;
-    try {
-        syncChannel = new BroadcastChannel('faith2026_sync');
-        syncChannel.onmessage = (e) => {
-            if (e.data && e.data.type === 'LOCAL_UPDATE' && !isCloudActive) {
-                prayers = e.data.prayers;
-                renderPrayers();
-            }
-        };
-    } catch(e) { syncChannel = null; }
-
-    // =============================================
-    // 2. Firebase 설정 로드 우선순위
-    //    1순위: localStorage에 저장된 커스텀 설정
-    //    2순위: 코드 상단 window.FIREBASE_CONFIG
-    // =============================================
-    function getFirebaseConfig() {
-        const saved = localStorage.getItem('faith2026_firebase_config');
+    window.onload = function() {
+        // 로컬 스토리지에서 방명록 데이터 불러오기
+        const saved = localStorage.getItem('portfolio_pure_local_feed');
         if (saved) {
-            try {
-                const parsed = JSON.parse(saved);
-                if (parsed.apiKey && parsed.projectId && !parsed.apiKey.includes('여기에')) {
-                    return parsed;
-                }
-            } catch(e) {}
-        }
-        const wc = window.FIREBASE_CONFIG;
-        if (wc && wc.apiKey && !wc.apiKey.includes('여기에')) {
-            return wc;
-        }
-        return null;
-    }
-
-    // =============================================
-    // 3. 초기화
-    // =============================================
-    window.onload = async function() {
-        randomizeVerse();
-        updateStatus('connecting');
-
-        // 저장된 설정값 모달에 자동 채우기
-        const savedConf = localStorage.getItem('faith2026_firebase_config');
-        if (savedConf) {
-            document.getElementById('firebase-config-input').value = savedConf;
-        }
-
-        const config = getFirebaseConfig();
-        if (config) {
-            await initFirebase(config);
+            try { feedItems = JSON.parse(saved); } catch(e) { feedItems = []; }
         } else {
-            // Firebase 미설정 → 로컬 모드
-            fallbackToLocal();
-            // 설정 안내 토스트
-            setTimeout(() => showToast('Firebase 설정이 필요합니다. 우상단 [Firebase 설정] 버튼을 눌러주세요.', 'warn'), 1000);
-        }
-    };
-
-    // =============================================
-    // 4. Firebase 초기화 및 실시간 리스너
-    // =============================================
-    async function initFirebase(config) {
-        try {
-            // 중복 초기화 방지
-            let app;
-            if (getApps().length === 0) {
-                app = initializeApp(config);
-            } else {
-                app = getApps()[0];
-            }
-
-            auth = getAuth(app);
-            db = getFirestore(app);
-
-            // 익명 인증 (새로고침마다 자동 재인증)
-            const cred = await signInAnonymously(auth);
-            userId = cred.user.uid; // Firebase UID를 기기 식별자로 사용
-
-            // Firestore 실시간 리스너 구독
-            const colRef = collection(db, window.APP_COLLECTION || 'faith2026_prayers');
-
-            if (unsubscribeListener) unsubscribeListener();
-
-            unsubscribeListener = onSnapshot(colRef,
-                (snapshot) => {
-                    const list = [];
-                    snapshot.forEach(d => list.push({ id: d.id, ...d.data() }));
-                    list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-                    prayers = list;
-                    renderPrayers();
-                    updateStatus('cloud');
-                    isCloudActive = true;
-                },
-                (err) => {
-                    console.error('Firestore 연결 오류:', err);
-                    fallbackToLocal();
-                }
-            );
-
-        } catch (err) {
-            console.warn('Firebase 초기화 실패:', err);
-            fallbackToLocal();
-            showToast('클라우드 연결 실패 - 로컬 모드로 작동합니다', 'warn');
-        }
-    }
-
-    // =============================================
-    // 5. 로컬 폴백 모드
-    // =============================================
-    function fallbackToLocal() {
-        isCloudActive = false;
-        const saved = localStorage.getItem('faith2026_local_prayers');
-        if (saved) {
-            try { prayers = JSON.parse(saved); } catch(e) { prayers = []; }
-        } else {
-            prayers = getDefaultPrayers();
+            feedItems = [
+                { id: '1', author: '방문자', category: '응원메시지', content: '깔끔한 UI 구성이 인상적입니다!', date: '2026-08-01' }
+            ];
             saveLocal();
         }
-        renderPrayers();
-        updateStatus('local');
-    }
+        renderFeed();
+    };
 
     function saveLocal() {
-        localStorage.setItem('faith2026_local_prayers', JSON.stringify(prayers));
-        if (syncChannel) {
-            syncChannel.postMessage({ type: 'LOCAL_UPDATE', prayers });
-        }
+        localStorage.setItem('portfolio_pure_local_feed', JSON.stringify(feedItems));
     }
 
-    function getDefaultPrayers() {
-        return [
-            {
-                id: 'demo1',
-                author: '믿음충만',
-                userId: 'demo_user',
-                category: '치유',
-                content: '장기 치료로 지쳐있는 가족이 있습니다. 소망의 빛을 마음에 품고 하루하루 일어날 용기를 얻기를 간구합니다.',
-                prayingCount: 5,
-                prayedUsers: [],
-                date: '2026-05-17',
-                createdAt: Date.now() - 3600000
-            },
-            {
-                id: 'demo2',
-                author: '지혜요청',
-                userId: 'demo_user2',
-                category: '개인기도',
-                content: '중요한 결정의 기로에 서 있습니다. 주님이 주시는 지혜와 깊은 통찰력으로 바른 길을 걸어갈 수 있도록 기도 부탁드립니다.',
-                prayingCount: 2,
-                prayedUsers: [],
-                date: '2026-05-16',
-                createdAt: Date.now() - 7200000
-            }
-        ];
-    }
-
-    // =============================================
-    // 6. 연결 상태 UI
-    // =============================================
-    function updateStatus(status) {
-        const dot = document.getElementById('sync-dot');
-        const text = document.getElementById('sync-text');
-        const badge = document.getElementById('sync-badge');
-        const btn = document.getElementById('submit-btn');
-
-        if (status === 'cloud') {
-            dot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-500';
-            text.innerText = '클라우드 실시간 동기화 중';
-            badge.className = 'text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full flex items-center gap-1.5';
-            if (btn) btn.disabled = false;
-        } else if (status === 'local') {
-            dot.className = 'w-1.5 h-1.5 rounded-full bg-blue-400';
-            text.innerText = '로컬 모드 (기기 단독)';
-            badge.className = 'text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2.5 py-1 rounded-full flex items-center gap-1.5';
-            if (btn) btn.disabled = false;
-        } else if (status === 'connecting') {
-            dot.className = 'w-1.5 h-1.5 rounded-full bg-amber-500 pulse-dot';
-            text.innerText = '서버 연결 중...';
-            badge.className = 'text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full flex items-center gap-1.5';
-        } else {
-            dot.className = 'w-1.5 h-1.5 rounded-full bg-rose-500';
-            text.innerText = '연결 오류';
-            badge.className = 'text-[10px] font-bold text-rose-700 bg-rose-50 border border-rose-200 px-2.5 py-1 rounded-full flex items-center gap-1.5';
-        }
-    }
-
-    // =============================================
-    // 7. 말씀 카드 제어
-    // =============================================
-    function randomizeVerse() {
-        const idx = Math.floor(Math.random() * bibleVerses.length);
-        currentVerseIdx = idx;
-        const v = bibleVerses[idx];
-        const tEl = document.getElementById('verse-text');
-        const rEl = document.getElementById('verse-ref');
-
-        tEl.style.opacity = '0'; rEl.style.opacity = '0';
-        setTimeout(() => {
-            tEl.innerText = '"' + v.text + '"';
-            rEl.innerText = '- ' + v.ref;
-            document.getElementById('verse-theme').innerText = v.theme;
-            tEl.style.opacity = '1'; rEl.style.opacity = '1';
-        }, 150);
+    function randomizeQuote() {
+        currentSloganIdx = (currentSloganIdx + 1) % slogans.length;
+        const item = slogans[currentSloganIdx];
+        document.getElementById('quote-text').innerText = `"${item.text}"`;
+        document.getElementById('quote-ref').innerText = `- ${item.ref}`;
+        document.getElementById('quote-theme').innerText = item.theme;
     }
 
     function changeCardBackground() {
-        const card = document.getElementById('verse-card');
+        const card = document.getElementById('quote-card');
         card.classList.remove(bgClasses[currentBgIdx]);
         currentBgIdx = (currentBgIdx + 1) % bgClasses.length;
         card.classList.add(bgClasses[currentBgIdx]);
     }
 
-    function copyVerseToClipboard() {
-        const v = bibleVerses[currentVerseIdx];
-        const txt = '"' + v.text + '" (' + v.ref + ')';
-        navigator.clipboard ? navigator.clipboard.writeText(txt) : legacyCopy(txt);
-        showToast('말씀이 클립보드에 복사되었습니다');
+    function copyContact() {
+        navigator.clipboard.writeText("developer@example.com");
+        showToast("이메일 주소가 복사되었습니다.");
     }
 
-    function legacyCopy(text) {
-        const el = document.createElement('textarea');
-        el.value = text;
-        document.body.appendChild(el);
-        el.select();
-        document.execCommand('copy');
-        document.body.removeChild(el);
-    }
+    function submitGuestbook() {
+        const author = document.getElementById('guest-author').value.trim();
+        const category = document.getElementById('guest-category').value;
+        const content = document.getElementById('guest-content').value.trim();
 
-    // =============================================
-    // 8. 기도제목 제출
-    // =============================================
-    async function submitPrayer() {
-        const authorEl = document.getElementById('prayer-author');
-        const categoryEl = document.getElementById('prayer-category');
-        const contentEl = document.getElementById('prayer-content');
-
-        const author = authorEl.value.trim();
-        const category = categoryEl.value;
-        const content = contentEl.value.trim();
-
-        if (!author) { showToast('닉네임을 입력하세요', 'warn'); return; }
-        if (!content) { showToast('기도제목을 입력하세요', 'warn'); return; }
-        if (content.length < 5) { showToast('기도제목을 조금 더 자세히 적어주세요', 'warn'); return; }
-
-        const now = new Date();
-        const dateStr = now.getFullYear() + '-' +
-            String(now.getMonth() + 1).padStart(2, '0') + '-' +
-            String(now.getDate()).padStart(2, '0');
-
-        const newPrayer = {
-            author,
-            userId,
-            category,
-            content,
-            prayingCount: 0,
-            prayedUsers: [],
-            date: dateStr,
-            createdAt: Date.now()
-        };
-
-        const btn = document.getElementById('submit-btn');
-        btn.disabled = true;
-        btn.innerText = '등록 중...';
-
-        if (isCloudActive && db && auth && auth.currentUser) {
-            try {
-                const colRef = collection(db, window.APP_COLLECTION || 'faith2026_prayers');
-                await addDoc(colRef, newPrayer);
-                showToast('기도제목이 전 기기에 동기화되었습니다');
-            } catch (e) {
-                console.error('클라우드 저장 실패:', e);
-                newPrayer.id = 'local_' + Date.now();
-                prayers.unshift(newPrayer);
-                saveLocal();
-                renderPrayers();
-                showToast('로컬에 임시 저장되었습니다', 'warn');
-            }
-        } else {
-            newPrayer.id = 'local_' + Date.now();
-            prayers.unshift(newPrayer);
-            saveLocal();
-            renderPrayers();
-            showToast('로컬에 저장되었습니다');
-        }
-
-        authorEl.value = '';
-        contentEl.value = '';
-        btn.disabled = false;
-        btn.innerText = '기도제목 올리기';
-    }
-
-    // =============================================
-    // 9. 수정
-    // =============================================
-    function editPrayer(id) {
-        const p = prayers.find(x => x.id === id);
-        if (!p) return;
-        const cc = document.getElementById('content-container-' + id);
-        const ec = document.getElementById('edit-controls-' + id);
-        cc.innerHTML = `
-            <div class="space-y-2 mt-1">
-                <textarea id="edit-ta-${id}" rows="3" class="w-full p-2.5 text-xs rounded-lg bg-slate-50 border border-slate-300 focus:bg-white focus:outline-none focus:border-blue-500 resize-none leading-relaxed">${p.content}</textarea>
-                <div class="flex justify-end gap-1.5">
-                    <button onclick="cancelEdit('${id}')" class="px-2.5 py-1 text-[11px] bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-md font-semibold transition">취소</button>
-                    <button onclick="saveEdit('${id}')" class="px-2.5 py-1 text-[11px] bg-blue-600 hover:bg-blue-700 text-white rounded-md font-semibold transition">저장</button>
-                </div>
-            </div>`;
-        if (ec) ec.classList.add('hidden');
-    }
-
-    function cancelEdit() { renderPrayers(); }
-
-    async function saveEdit(id) {
-        const idx = prayers.findIndex(x => x.id === id);
-        if (idx === -1) return;
-        const nc = document.getElementById('edit-ta-' + id).value.trim();
-        if (!nc) { showToast('내용을 입력해주세요', 'warn'); return; }
-
-        if (isCloudActive && db && auth.currentUser) {
-            try {
-                await updateDoc(doc(db, window.APP_COLLECTION || 'faith2026_prayers', id), { content: nc });
-                showToast('수정 사항이 동기화되었습니다');
-            } catch(e) {
-                prayers[idx].content = nc; saveLocal(); renderPrayers();
-                showToast('로컬에 수정 반영되었습니다');
-            }
-        } else {
-            prayers[idx].content = nc; saveLocal(); renderPrayers();
-            showToast('수정 사항이 반영되었습니다');
-        }
-    }
-
-    // =============================================
-    // 10. 삭제
-    // =============================================
-    function deletePrayer(id) {
-        prayerIdToDelete = id;
-        document.getElementById('delete-confirm-modal').classList.remove('hidden');
-        document.getElementById('modal-delete-confirm-btn').onclick = executeDelete;
-    }
-
-    function closeDeleteModal() {
-        document.getElementById('delete-confirm-modal').classList.add('hidden');
-        prayerIdToDelete = null;
-    }
-
-    async function executeDelete() {
-        if (!prayerIdToDelete) return closeDeleteModal();
-        const id = prayerIdToDelete;
-
-        if (isCloudActive && db && auth.currentUser) {
-            try {
-                await deleteDoc(doc(db, window.APP_COLLECTION || 'faith2026_prayers', id));
-                showToast('기도제목이 삭제되었습니다');
-            } catch(e) {
-                prayers = prayers.filter(p => p.id !== id); saveLocal(); renderPrayers();
-                showToast('로컬에서 삭제되었습니다');
-            }
-        } else {
-            prayers = prayers.filter(p => p.id !== id); saveLocal(); renderPrayers();
-            showToast('삭제되었습니다');
-        }
-        closeDeleteModal();
-    }
-
-    // =============================================
-    // 11. 함께 기도 (공감)
-    // =============================================
-    async function supportPrayer(id) {
-        const idx = prayers.findIndex(x => x.id === id);
-        if (idx === -1) return;
-        const p = prayers[idx];
-        let pu = p.prayedUsers ? [...p.prayedUsers] : [];
-        let pc = p.prayingCount || 0;
-        const ui = pu.indexOf(userId);
-
-        if (ui > -1) {
-            pu.splice(ui, 1);
-            pc = Math.max(0, pc - 1);
-            showToast('함께 기도 동참을 취소했습니다');
-        } else {
-            pu.push(userId);
-            pc++;
-            showToast('중보 기도로 함께 동참하셨습니다!');
-        }
-
-        if (isCloudActive && db && auth.currentUser) {
-            try {
-                await updateDoc(doc(db, window.APP_COLLECTION || 'faith2026_prayers', id), {
-                    prayedUsers: pu, prayingCount: pc
-                });
-            } catch(e) {
-                prayers[idx].prayedUsers = pu; prayers[idx].prayingCount = pc;
-                saveLocal(); renderPrayers();
-            }
-        } else {
-            prayers[idx].prayedUsers = pu; prayers[idx].prayingCount = pc;
-            saveLocal(); renderPrayers();
-        }
-    }
-
-    // =============================================
-    // 12. Firebase 설정 저장/초기화
-    // =============================================
-    function openConfigModal() {
-        document.getElementById('config-modal').classList.remove('hidden');
-    }
-    function closeConfigModal() {
-        document.getElementById('config-modal').classList.add('hidden');
-    }
-
-    function saveConfig() {
-        const val = document.getElementById('firebase-config-input').value.trim();
-        if (!val) { showToast('설정 값을 입력해주세요', 'warn'); return; }
-        try {
-            const parsed = JSON.parse(val);
-            if (!parsed.apiKey || !parsed.projectId) {
-                showToast('apiKey와 projectId가 필수입니다', 'warn'); return;
-            }
-            localStorage.setItem('faith2026_firebase_config', JSON.stringify(parsed));
-            showToast('설정 저장 완료! 페이지를 새로고침합니다...');
-            setTimeout(() => window.location.reload(), 1200);
-        } catch(e) {
-            showToast('JSON 형식이 올바르지 않습니다. 중괄호 { } 를 확인해주세요', 'warn');
-        }
-    }
-
-    function resetConfig() {
-        localStorage.removeItem('faith2026_firebase_config');
-        showToast('설정이 초기화되었습니다');
-        setTimeout(() => window.location.reload(), 1200);
-    }
-
-    // =============================================
-    // 13. 렌더링
-    // =============================================
-    function renderPrayers() {
-        const list = document.getElementById('prayer-list');
-        const countEl = document.getElementById('prayer-count');
-        if (countEl) countEl.innerText = prayers.length + '건';
-
-        if (prayers.length === 0) {
-            list.innerHTML = `
-                <div class="bg-white rounded-xl p-8 text-center border border-slate-200">
-                    <i class="fa-solid fa-hands-praying text-slate-300 text-2xl mb-3"></i>
-                    <p class="text-xs text-slate-500 font-medium">등록된 기도제목이 없습니다.<br>첫 기도제목을 올려보세요!</p>
-                </div>`;
+        if (!author || !content) {
+            showToast('작성자와 내용을 입력해주세요.');
             return;
         }
 
-        list.innerHTML = '';
-        prayers.forEach(p => {
-            const hasPrayed = p.prayedUsers && p.prayedUsers.includes(userId);
-            const isMine = p.userId === userId;
-            const card = document.createElement('div');
-            card.className = 'bg-white rounded-xl p-5 border border-slate-200 shadow-sm relative transition-all hover:shadow-md hover:border-slate-300';
+        const now = new Date();
+        const dateStr = now.toISOString().split('T')[0];
 
-            card.innerHTML = `
-                <div class="flex items-center justify-between text-[11px] mb-3 ${isMine ? 'pr-16' : 'pr-2'}">
-                    <div class="flex items-center gap-2 flex-wrap">
-                        <span class="font-bold text-blue-900 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100">${escHtml(p.category)}</span>
-                        <span class="font-bold text-slate-700">${escHtml(p.author)}</span>
-                        ${isMine ? '<span class="text-[9px] text-blue-500 bg-blue-50 border border-blue-100 px-1.5 py-0.5 rounded-full font-bold">내 글</span>' : ''}
-                    </div>
-                    <span class="text-slate-400 text-[10px] flex-shrink-0">${escHtml(p.date)}</span>
-                </div>
-                <div id="content-container-${p.id}" class="mb-4">
-                    <p class="text-slate-700 text-xs leading-relaxed whitespace-pre-wrap">${escHtml(p.content)}</p>
-                </div>
-                <div class="flex justify-between items-center border-t border-slate-100 pt-3">
-                    <button onclick="supportPrayer('${p.id}')"
-                        class="flex items-center gap-1.5 text-xs ${hasPrayed ? 'text-blue-600 font-bold' : 'text-slate-400 hover:text-slate-700'} transition">
-                        <i class="${hasPrayed ? 'fa-solid' : 'fa-regular'} fa-heart text-sm"></i>
-                        <span>함께 기도해요</span>
-                        <span class="text-[9px] font-bold px-1.5 py-0.5 rounded-full ${hasPrayed ? 'bg-blue-50 text-blue-600 border border-blue-100' : 'bg-slate-100 text-slate-400'}">
-                            ${p.prayingCount || 0}
-                        </span>
-                    </button>
-                </div>`;
+        const newItem = {
+            id: 'item_' + Date.now(),
+            author, category, content,
+            date: dateStr
+        };
 
-            if (isMine) {
-                const ctrl = document.createElement('div');
-                ctrl.id = 'edit-controls-' + p.id;
-                ctrl.className = 'absolute top-4 right-4 flex items-center gap-0.5';
-                ctrl.innerHTML = `
-                    <button onclick="editPrayer('${p.id}')" title="수정"
-                        class="p-1.5 text-slate-300 hover:text-blue-600 hover:bg-blue-50 rounded-md transition">
-                        <i class="fa-solid fa-pen text-[11px]"></i>
-                    </button>
-                    <button onclick="deletePrayer('${p.id}')" title="삭제"
-                        class="p-1.5 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-md transition">
-                        <i class="fa-solid fa-trash-can text-[11px]"></i>
-                    </button>`;
-                card.appendChild(ctrl);
-            }
-            list.appendChild(card);
-        });
+        feedItems.unshift(newItem);
+        saveLocal();
+        renderFeed();
+
+        document.getElementById('guest-author').value = '';
+        document.getElementById('guest-content').value = '';
+        showToast('메시지가 등록되었습니다.');
     }
 
-    // XSS 방어
-    function escHtml(str) {
-        if (!str) return '';
-        return String(str)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;');
+    function deleteGuestbook(id) {
+        feedItems = feedItems.filter(item => item.id !== id);
+        saveLocal();
+        renderFeed();
+        showToast('메시지가 삭제되었습니다.');
     }
 
-    // =============================================
-    // 14. 토스트
-    // =============================================
-    let toastTimer = null;
-    function showToast(msg, type = 'success') {
-        const t = document.getElementById('toast');
-        const m = document.getElementById('toast-message');
-        const ic = document.getElementById('toast-icon');
+    function renderFeed() {
+        const container = document.getElementById('feed-list');
+        document.getElementById('feed-count').innerText = `${feedItems.length}건`;
 
-        m.innerText = msg;
-        if (type === 'warn') {
-            t.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-amber-900 text-white px-5 py-3 rounded-full text-xs font-semibold shadow-lg flex items-center gap-2 whitespace-nowrap transition-all duration-300';
-            ic.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-amber-300"></i>';
-        } else {
-            t.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white px-5 py-3 rounded-full text-xs font-semibold shadow-lg flex items-center gap-2 whitespace-nowrap transition-all duration-300';
-            ic.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-400"></i>';
+        if (feedItems.length === 0) {
+            container.innerHTML = `<div class="bg-white rounded-xl p-8 text-center border border-slate-200 text-xs text-slate-400">작성된 방명록이 없습니다.</div>`;
+            return;
         }
 
-        t.style.opacity = '1';
-        t.style.transform = 'translate(-50%, -8px)';
-
-        if (toastTimer) clearTimeout(toastTimer);
-        toastTimer = setTimeout(() => {
-            t.style.opacity = '0';
-            t.style.transform = 'translate(-50%, 0)';
-        }, 2800);
+        container.innerHTML = feedItems.map(item => `
+            <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm space-y-2">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="font-bold text-xs text-slate-800">${escapeHtml(item.author)}</span>
+                        <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200 font-medium">${item.category}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] text-slate-400">${item.date}</span>
+                        <button onclick="deleteGuestbook('${item.id}')" class="text-slate-300 hover:text-red-500 transition text-xs">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                </div>
+                <p class="text-xs text-slate-600 leading-relaxed">${escapeHtml(item.content)}</p>
+            </div>
+        `).join('');
     }
 
-    // =============================================
-    // 글로벌 노출
-    // =============================================
-    window.randomizeVerse = randomizeVerse;
-    window.changeCardBackground = changeCardBackground;
-    window.copyVerseToClipboard = copyVerseToClipboard;
-    window.submitPrayer = submitPrayer;
-    window.editPrayer = editPrayer;
-    window.cancelEdit = cancelEdit;
-    window.saveEdit = saveEdit;
-    window.deletePrayer = deletePrayer;
-    window.closeDeleteModal = closeDeleteModal;
-    window.supportPrayer = supportPrayer;
-    window.openConfigModal = openConfigModal;
-    window.closeConfigModal = closeConfigModal;
-    window.saveConfig = saveConfig;
-    window.resetConfig = resetConfig;
+    function escapeHtml(str) {
+        return (str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        document.getElementById('toast-message').innerText = msg;
+        t.style.opacity = '1';
+        setTimeout(() => { t.style.opacity = '0'; }, 2500);
+    }
 </script>
 </body>
 </html>
