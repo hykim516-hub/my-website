@@ -1,513 +1,472 @@
 <!DOCTYPE html>
-<html lang="ko" class="scroll-smooth">
+<html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>김용현 | Embedded & Software Developer Portfolio</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: #f8fafc;
-            letter-spacing: -0.02em;
-        }
-        .hero-gradient {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f2027 100%);
-        }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 9999px; }
-        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>예배자의 자세, 인도자의 마음 — 찬양 인도자 세미나 노트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css" />
+<style>
+  :root{
+    --bg:#ffffff;
+    --surface:#f7f8fb;
+    --card-border:#e7e9f0;
+    --ink:#12141c;
+    --ink-dim:#6b7080;
+    --ink-faint:#9298a8;
+    --blue:#2f6fed;
+    --blue-light:#eaf1ff;
+    --orange:#e08a2c;
+    --orange-light:#fff1e0;
+    --purple:#7c5cf0;
+    --purple-light:#f1ecff;
+    --teal:#0fa78a;
+    --teal-light:#e4faf5;
+    --radius:20px;
+  }
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Pretendard Variable','Pretendard',-apple-system,sans-serif;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------- NAVBAR ---------- */
+  .navbar{
+    position:sticky; top:0; z-index:30;
+    background:rgba(255,255,255,0.92);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--card-border);
+  }
+  .navbar-inner{
+    max-width:880px; margin:0 auto;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 20px;
+  }
+  .brand{ display:flex; align-items:center; gap:10px; }
+  .brand-badge{
+    width:38px; height:38px; border-radius:11px;
+    background:linear-gradient(135deg, var(--blue), #4f8cff);
+    color:#fff; display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:13px; letter-spacing:-0.02em;
+  }
+  .brand-name{ font-weight:800; font-size:17px; letter-spacing:-0.01em; }
+  .menu-btn{
+    width:38px; height:38px; border-radius:10px; border:1px solid var(--card-border);
+    background:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer;
+  }
+  .menu-btn svg{ width:18px; height:18px; }
+
+  .toc{
+    display:none;
+    max-width:880px; margin:0 auto;
+    padding:0 20px 14px;
+    gap:6px; flex-wrap:wrap;
+  }
+  .toc.open{ display:flex; }
+  .toc a{
+    padding:8px 14px; border-radius:999px; background:var(--surface);
+    color:var(--ink-dim); text-decoration:none; font-size:13px; font-weight:600;
+    border:1px solid var(--card-border);
+  }
+  .toc a:hover{ color:var(--blue); border-color:var(--blue); }
+  @media(min-width:700px){
+    .toc{ display:flex; }
+    .menu-btn{ display:none; }
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    text-align:center;
+    padding:64px 24px 44px;
+    max-width:760px; margin:0 auto;
+  }
+  .eyebrow{
+    color:var(--blue); font-weight:800; font-size:13px;
+    letter-spacing:0.16em; margin-bottom:16px; display:block;
+  }
+  .hero h1{
+    font-size:clamp(28px,5vw,42px);
+    font-weight:900; letter-spacing:-0.02em;
+    margin:0 0 20px; color:var(--ink);
+  }
+  .underline{
+    width:64px; height:4px; background:var(--blue); border-radius:4px;
+    margin:0 auto 22px;
+  }
+  .hero p{ color:var(--ink-dim); font-size:15.5px; max-width:520px; margin:0 auto; }
+
+  main{ max-width:880px; margin:0 auto; padding:0 20px 40px; }
+  section{ padding:52px 0; }
+
+  .section-head{ margin-bottom:28px; }
+  .section-head .eyebrow{ margin-bottom:8px; }
+  .section-head h2{ font-size:clamp(22px,3.2vw,28px); font-weight:900; margin:0 0 10px; letter-spacing:-0.01em; }
+  .section-head p{ color:var(--ink-dim); font-size:14.5px; max-width:60ch; }
+
+  /* ---------- BANNER CARD (signature element) ---------- */
+  .banner-card{
+    border-radius:var(--radius);
+    overflow:hidden;
+    border:1px solid var(--card-border);
+    background:#fff;
+    box-shadow:0 1px 2px rgba(20,20,40,0.04);
+    margin-bottom:20px;
+  }
+  .banner{
+    position:relative;
+    padding:40px 20px;
+    display:flex; align-items:center; justify-content:center;
+    min-height:150px;
+  }
+  .banner svg{ width:58px; height:58px; position:relative; z-index:1; }
+  .banner-warm{ background:linear-gradient(150deg,#2a1c10,#7a4420 65%,#c9752c); }
+  .banner-navy{ background:linear-gradient(150deg,#0c1638,#16327a 65%,#2f6fed); }
+  .banner-purple{ background:linear-gradient(150deg,#1c1330,#432681 65%,#7c5cf0); }
+  .banner-teal{ background:linear-gradient(150deg,#0a2420,#0d5548 65%,#0fa78a); }
+  .badge{
+    position:absolute; top:16px; right:16px;
+    padding:7px 14px; border-radius:999px;
+    font-size:12.5px; font-weight:800; color:#fff;
+    z-index:1;
+  }
+  .badge-warm{ background:var(--orange); }
+  .badge-navy{ background:var(--blue); }
+  .badge-purple{ background:var(--purple); }
+  .badge-teal{ background:var(--teal); }
+
+  .banner-body{ padding:26px 26px 28px; }
+  .banner-body .kicker{ color:var(--ink-faint); font-size:12.5px; font-weight:700; margin-bottom:6px; display:block; }
+  .banner-body h3{ font-size:19px; font-weight:800; margin:0 0 10px; }
+  .banner-body p{ color:var(--ink-dim); font-size:14.5px; margin:0 0 14px; }
+  .tags{ display:flex; flex-wrap:wrap; gap:8px; }
+  .tag{
+    background:var(--surface); border:1px solid var(--card-border);
+    color:var(--ink); font-size:12.5px; font-weight:600;
+    padding:6px 12px; border-radius:999px;
+  }
+
+  /* ---------- PRINCIPLE LIST ---------- */
+  .principle-list{ list-style:none; margin:0 0 20px; padding:0; display:grid; gap:12px; }
+  .principle-list li{
+    background:var(--surface);
+    border:1px solid var(--card-border);
+    border-left:4px solid var(--blue);
+    padding:16px 18px;
+    border-radius:12px;
+    font-size:14.5px;
+  }
+  .principle-list li strong{ color:var(--blue); }
+
+  .callout{
+    background:var(--blue-light);
+    border:1px solid #d6e4ff;
+    border-radius:14px;
+    padding:16px 18px;
+    font-size:14px;
+  }
+  .callout b{ color:var(--blue); }
+
+  /* ---------- FLOW ---------- */
+  .flow{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; font-size:13px; }
+  .flow span.step{
+    background:var(--surface); border:1px solid var(--card-border);
+    padding:6px 12px; border-radius:999px;
+  }
+  .flow span.arrow{ color:var(--blue); font-weight:700; }
+
+  .quote-block{
+    text-align:center; padding:32px 16px; margin-top:8px;
+    border-top:1px solid var(--card-border); border-bottom:1px solid var(--card-border);
+  }
+  .quote-block p{ font-size:clamp(18px,2.4vw,21px); font-weight:800; color:var(--blue); margin:0 0 8px; }
+  .quote-block span{ color:var(--ink-faint); font-size:13px; }
+
+  /* ---------- ICON CARDS (about-me style) ---------- */
+  .icon-card-grid{ display:grid; gap:18px; }
+  @media(min-width:700px){ .icon-card-grid{ grid-template-columns:1fr 1fr; } }
+  .icon-card{
+    background:var(--surface);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:26px;
+  }
+  .icon-circle{
+    width:48px; height:48px; border-radius:13px;
+    display:flex; align-items:center; justify-content:center;
+    margin-bottom:16px;
+  }
+  .icon-circle.blue{ background:var(--blue-light); color:var(--blue); }
+  .icon-circle.green{ background:var(--teal-light); color:var(--teal); }
+  .icon-circle svg{ width:22px; height:22px; }
+  .icon-card h4{ font-size:16px; font-weight:800; margin:0 0 8px; }
+  .icon-card .desc{ color:var(--ink-dim); font-size:13.5px; margin-bottom:14px; }
+  .step-list{ list-style:none; margin:0; padding:0; counter-reset:step; }
+  .step-list li{
+    counter-increment:step;
+    position:relative; padding:8px 0 8px 32px;
+    font-size:13.8px; border-top:1px dashed var(--card-border);
+  }
+  .step-list li:first-child{ border-top:none; }
+  .step-list li::before{
+    content: counter(step);
+    position:absolute; left:0; top:8px; width:20px; height:20px; border-radius:50%;
+    background:#fff; border:1px solid var(--blue); color:var(--blue);
+    font-size:11px; font-weight:800; display:flex; align-items:center; justify-content:center;
+  }
+  .why-box{
+    margin-top:12px; font-size:13px; color:var(--ink-dim);
+    background:#fff; border-left:3px solid var(--blue); padding:10px 14px; border-radius:0 10px 10px 0;
+  }
+  .why-box b{ color:var(--ink); }
+
+  /* ---------- QNA ---------- */
+  .qna{ display:grid; gap:14px; }
+  .qna-card{
+    background:#fff; border:1px solid var(--card-border); border-radius:16px; overflow:hidden;
+  }
+  .qna-q{ padding:16px 20px; font-weight:800; font-size:14.5px; background:var(--surface); display:flex; gap:8px; }
+  .qna-q .qmark{ color:var(--blue); }
+  .qna-a{ padding:16px 20px 20px; color:var(--ink-dim); font-size:14px; }
+  .qna-a b{ color:var(--ink); }
+  .qna-a ul{ margin:10px 0 0; padding-left:18px; }
+  .qna-a li{ margin-bottom:6px; }
+
+  footer{ text-align:center; padding:56px 24px 72px; border-top:1px solid var(--card-border); }
+  footer .final-quote{
+    max-width:600px; margin:0 auto 10px; font-size:clamp(16px,2.2vw,19px);
+    font-weight:700; line-height:1.9;
+  }
+  footer .final-quote .accent{ color:var(--blue); }
+  footer .meta{ color:var(--ink-faint); font-size:12px; margin-top:16px; }
+</style>
 </head>
-<body class="text-slate-800 antialiased selection:bg-blue-500 selection:text-white">
+<body>
 
-    <!-- 상단 네비게이션 바 -->
-    <header class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200/80 transition-all duration-300">
-        <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-            <a href="#" class="text-lg font-black tracking-tight text-slate-900 flex items-center gap-2">
-                <span class="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center text-sm font-bold shadow-md shadow-blue-500/20">DEV</span>
-                <span>HYK.DEV</span>
-            </a>
+<div class="navbar">
+  <div class="navbar-inner">
+    <div class="brand">
+      <div class="brand-badge">WD</div>
+      <div class="brand-name">WORSHIP.NOTE</div>
+    </div>
+    <button class="menu-btn" onclick="document.getElementById('toc').classList.toggle('open')" aria-label="메뉴 열기">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+  <nav class="toc" id="toc">
+    <a href="#attitude">01 · 자세</a>
+    <a href="#conti">02 · 콘티 짜는 법</a>
+    <a href="#vocal">03 · 발성 스킬</a>
+    <a href="#qna">04 · Q&A</a>
+  </nav>
+</div>
 
-            <!-- 데스크톱 메뉴 -->
-            <nav class="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600">
-                <a href="#about" class="hover:text-blue-600 transition">About</a>
-                <a href="#skills" class="hover:text-blue-600 transition">Skills & Licenses</a>
-                <a href="#projects" class="hover:text-blue-600 transition">Projects</a>
-                <a href="#work-experience" class="hover:text-blue-600 transition">Work & Military</a>
-                <a href="#activities" class="hover:text-blue-600 transition">Activities</a>
-            </nav>
+<div class="hero">
+  <span class="eyebrow">WORSHIP LEADER SEMINAR NOTES</span>
+  <h1>예배자의 자세, 인도자의 마음</h1>
+  <div class="underline"></div>
+  <p>내 생각이 아닌 주님의 영으로 이끄는 것 — 콘티를 짜는 법과 목소리를 준비하는 법까지, 찬양 인도자를 위한 세미나 기록.</p>
+</div>
 
-            <div class="hidden md:flex items-center gap-3">
-                <a href="#contact" class="px-4 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition">
-                    Contact Me
-                </a>
-            </div>
+<main>
 
-            <!-- 모바일 메뉴 버튼 -->
-            <button onclick="toggleMobileMenu()" class="md:hidden text-slate-700 focus:outline-none p-2">
-                <i class="fa-solid fa-bars text-xl"></i>
-            </button>
-        </div>
-
-        <!-- 모바일 드롭다운 메뉴 -->
-        <div id="mobile-menu" class="hidden md:hidden bg-white border-b border-slate-200 px-6 py-4 space-y-3">
-            <a href="#about" onclick="toggleMobileMenu()" class="block text-sm font-semibold text-slate-600 hover:text-blue-600">About</a>
-            <a href="#skills" onclick="toggleMobileMenu()" class="block text-sm font-semibold text-slate-600 hover:text-blue-600">Skills & Licenses</a>
-            <a href="#projects" onclick="toggleMobileMenu()" class="block text-sm font-semibold text-slate-600 hover:text-blue-600">Projects</a>
-            <a href="#work-experience" onclick="toggleMobileMenu()" class="block text-sm font-semibold text-slate-600 hover:text-blue-600">Work & Military</a>
-            <a href="#activities" onclick="toggleMobileMenu()" class="block text-sm font-semibold text-slate-600 hover:text-blue-600">Activities</a>
-            <a href="#contact" onclick="toggleMobileMenu()" class="block text-center w-full py-2.5 text-xs font-bold text-white bg-blue-600 rounded-lg">Contact Me</a>
-        </div>
-    </header>
-
-    <!-- 히어로 섹션 (HERO) -->
-    <section class="hero-gradient text-white pt-32 pb-20 md:pt-40 md:pb-28 relative overflow-hidden">
-        <div class="absolute -top-24 -right-24 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute bottom-0 left-10 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
-        <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-12 gap-12 items-center relative z-10">
-            <div class="md:col-span-7 space-y-6">
-                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 text-blue-300 text-xs font-semibold border border-white/10">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    임베디드 & 소프트웨어 엔지니어 포트폴리오
-                </div>
-                <h1 class="text-3xl md:text-5xl font-black tracking-tight leading-tight">
-                    하드웨어 제어와 시스템 최적화를 지향하는 <span class="text-blue-400">개발자 김용현</span>입니다.
-                </h1>
-                <p class="text-slate-300 text-sm md:text-base leading-relaxed font-normal max-w-xl">
-                    MCU 펌웨어 개발부터 저전력 회로 설계, 시스템 최적화까지 하드웨어와 소프트웨어 간 최적의 상호작용을 구현합니다.
-                </p>
-                <div class="flex flex-wrap items-center gap-4 pt-2">
-                    <a href="#projects" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-blue-600/30 transition flex items-center gap-2">
-                        프로젝트 보기 <i class="fa-solid fa-arrow-down text-[10px]"></i>
-                    </a>
-                </div>
-            </div>
-
-            <!-- 하이라이트 요약 카드 -->
-            <div class="md:col-span-5">
-                <div class="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-md space-y-4">
-                    <div class="flex justify-between items-center border-b border-white/10 pb-4">
-                        <span class="text-xs text-slate-400 font-medium">소속 / 복무</span>
-                        <span class="text-sm font-bold text-white text-right">제19전투비행단 기지방호전대 대공방어대 정비반</span>
-                    </div>
-                    <div class="flex justify-between items-center border-b border-white/10 pb-4">
-                        <span class="text-xs text-slate-400 font-medium">최종 학력</span>
-                        <span class="text-sm font-bold text-white">구미전자공업고등학교 졸업 (전자과)</span>
-                    </div>
-                    <div class="flex justify-between items-center border-b border-white/10 pb-4">
-                        <span class="text-xs text-slate-400 font-medium">주요 기술</span>
-                        <span class="text-sm font-bold text-blue-400">C, C++, Python, MCU F/W, PCB Artwork</span>
-                    </div>
-                    <div class="flex justify-between items-center border-b border-white/10 pb-4">
-                        <span class="text-xs text-slate-400 font-medium">자격증</span>
-                        <span class="text-sm font-bold text-white">전자산업기사, 전자캐드기능사 외</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs text-slate-400 font-medium">관심 분야</span>
-                        <span class="text-sm font-bold text-emerald-400">IoT, 지능형 모빌리티, 임베디드 HW/SW</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ABOUT ME 섹션 -->
-    <section id="about" class="py-20 bg-white border-b border-slate-200/60">
-        <div class="max-w-6xl mx-auto px-6">
-            <div class="text-center max-w-2xl mx-auto mb-16 space-y-2">
-                <h2 class="text-xs font-bold text-blue-600 tracking-wider uppercase">About Me</h2>
-                <p class="text-2xl md:text-3xl font-extrabold text-slate-900">열정과 지속적인 학습을 통한 문제 해결</p>
-                <div class="w-12 h-1 bg-blue-600 mx-auto rounded-full mt-4"></div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100 space-y-3 hover:shadow-md transition">
-                    <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-lg font-bold">
-                        <i class="fa-solid fa-microchip"></i>
-                    </div>
-                    <h3 class="font-bold text-base text-slate-900">임베디드 시스템 설계</h3>
-                    <p class="text-xs text-slate-600 leading-relaxed">
-                        8/32비트 MCU 펌웨어 제어, PCB Artwork, 전압 제어 회로 설계를 바탕으로 안정적인 HW/SW 인터페이스를 구축합니다.
-                    </p>
-                </div>
-                <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100 space-y-3 hover:shadow-md transition">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg font-bold">
-                        <i class="fa-solid fa-car-side"></i>
-                    </div>
-                    <h3 class="font-bold text-base text-slate-900">지능형 모빌리티 & IoT</h3>
-                    <p class="text-xs text-slate-600 leading-relaxed">
-                        센서 제어, 자율주행 라인트레이싱, 모빌리티 소프트웨어 개발을 경험하며 다양한 경진대회에서 수상했습니다.
-                    </p>
-                </div>
-                <div class="p-6 rounded-2xl bg-slate-50 border border-slate-100 space-y-3 hover:shadow-md transition">
-                    <div class="w-10 h-10 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center text-lg font-bold">
-                        <i class="fa-solid fa-users"></i>
-                    </div>
-                    <h3 class="font-bold text-base text-slate-900">체계적인 협업 & 리더십</h3>
-                    <p class="text-xs text-slate-600 leading-relaxed">
-                        계획적인 시스템 개발과 펌웨어(F/W) 리드 역할을 통해 팀의 목표를 차질 없이 성공적으로 달성합니다.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- SKILLS & LICENSES 섹션 -->
-    <section id="skills" class="py-20 bg-slate-50 border-b border-slate-200/60">
-        <div class="max-w-6xl mx-auto px-6">
-            <div class="text-center max-w-2xl mx-auto mb-16 space-y-2">
-                <h2 class="text-xs font-bold text-blue-600 tracking-wider uppercase">Capabilities</h2>
-                <p class="text-2xl md:text-3xl font-extrabold text-slate-900">기술 스택, 자격증 및 수상 내역</p>
-                <div class="w-12 h-1 bg-blue-600 mx-auto rounded-full mt-4"></div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- SW & Embedded Tools -->
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
-                        <i class="fa-solid fa-code text-blue-600"></i> Programming & Tools
-                    </h3>
-                    <div class="flex flex-wrap gap-2">
-                        <span class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-50 text-blue-700 border border-blue-100">C / C++</span>
-                        <span class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-50 text-blue-700 border border-blue-100">Python</span>
-                        <span class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-50 text-blue-700 border border-blue-100">MCU Firmware</span>
-                        <span class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-50 text-blue-700 border border-blue-100">Atmel Studio</span>
-                        <span class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-50 text-blue-700 border border-blue-100">ORCAD / PADS</span>
-                    </div>
-                </div>
-
-                <!-- Licenses -->
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
-                        <i class="fa-solid fa-certificate text-purple-600"></i> Licenses
-                    </h3>
-                    <ul class="text-xs space-y-1.5 text-slate-700 font-medium">
-                        <li>• 과정평가형 전자산업기사</li>
-                        <li>• 전자캐드기능사</li>
-                        <li>• 전기기능사</li>
-                        <li>• ITQ (한글, 파워포인트, Excel)</li>
-                    </ul>
-                </div>
-
-                <!-- Awards -->
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
-                        <i class="fa-solid fa-trophy text-amber-600"></i> Awards
-                    </h3>
-                    <ul class="text-xs space-y-1.5 text-slate-700 font-medium">
-                        <li>• 2023 R&DE 해커톤 챌린지 (1위)</li>
-                        <li>• 친환경 지능형 자동차 경진대회 (2위)</li>
-                        <li>• 제 2회 지능형 모빌리티 SW 경진대회 (2위)</li>
-                        <li>• 2023 국제 로봇 콘테스트 (한국로봇산업진흥원장상)</li>
-                        <li>• 2023 R&DE 농구 로봇 제작 팀 프로젝트 (3위)</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- PROJECTS 섹션 -->
-    <section id="projects" class="py-20 bg-white border-b border-slate-200/60">
-        <div class="max-w-6xl mx-auto px-6">
-            <div class="text-center max-w-2xl mx-auto mb-12 space-y-2">
-                <h2 class="text-xs font-bold text-blue-600 tracking-wider uppercase">Portfolio</h2>
-                <p class="text-2xl md:text-3xl font-extrabold text-slate-900">주요 프로젝트</p>
-                <div class="w-12 h-1 bg-blue-600 mx-auto rounded-full mt-4"></div>
-            </div>
-
-            <!-- 프로젝트 그리드 -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="project-grid">
-
-                <!-- 프로젝트 1 -->
-                <div class="project-card bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col">
-                    <div class="h-48 bg-slate-800 relative flex items-center justify-center text-white overflow-hidden">
-                        <div class="absolute inset-0 bg-gradient-to-tr from-amber-900 to-slate-900 opacity-90"></div>
-                        <i class="fa-solid fa-solar-panel text-5xl text-amber-400 opacity-40"></i>
-                        <span class="absolute top-4 right-4 bg-amber-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">HW & Circuit</span>
-                    </div>
-                    <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
-                        <div class="space-y-2">
-                            <span class="text-[10px] text-slate-400 font-semibold">2022.11 ~ 2023.02</span>
-                            <h3 class="text-lg font-bold text-slate-900">태양광 이용 절전형 스탠드</h3>
-                            <p class="text-xs text-slate-600 leading-relaxed">
-                                태양광 패널 전력 수집 및 전압 제어 회로(LM317) 제작. 저전력 LED 조명과 안정적 배터리 관리 시스템 구현.
-                            </p>
-                        </div>
-                        <div class="flex flex-wrap gap-1.5">
-                            <span class="text-[10px] font-medium bg-slate-100 text-slate-700 px-2 py-0.5 rounded">태양광충전</span>
-                            <span class="text-[10px] font-medium bg-slate-100 text-slate-700 px-2 py-0.5 rounded">LM317</span>
-                            <span class="text-[10px] font-medium bg-slate-100 text-slate-700 px-2 py-0.5 rounded">직류전원제어</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 프로젝트 2 -->
-                <div class="project-card bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col">
-                    <div class="h-48 bg-slate-800 relative flex items-center justify-center text-white overflow-hidden">
-                        <div class="absolute inset-0 bg-gradient-to-tr from-blue-900 to-slate-900 opacity-90"></div>
-                        <i class="fa-solid fa-robot text-5xl text-blue-400 opacity-40"></i>
-                        <span class="absolute top-4 right-4 bg-blue-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">Robotics / F/W</span>
-                    </div>
-                    <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
-                        <div class="space-y-2">
-                            <span class="text-[10px] text-slate-400 font-semibold">2023.08 ~ 2023.10</span>
-                            <h3 class="text-lg font-bold text-slate-900">AIR-SPORTS 농구 로봇 제작</h3>
-                            <p class="text-xs text-slate-600 leading-relaxed">
-                                PS4 컨트롤러와 TETRIX PRIZM 컨트롤러 연동 F/W 구현. 모터 제어 및 경기 대응 로직 프로그램 작성.
-                            </p>
-                        </div>
-                        <div class="flex flex-wrap gap-1.5">
-                            <span class="text-[10px] font-medium bg-slate-100 text-slate-700 px-2 py-0.5 rounded">Arduino</span>
-                            <span class="text-[10px] font-medium bg-slate-100 text-slate-700 px-2 py-0.5 rounded">TETRIX PRIZM</span>
-                            <span class="text-[10px] font-medium bg-slate-100 text-slate-700 px-2 py-0.5 rounded">F/W</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 프로젝트 3 -->
-                <div class="project-card bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col">
-                    <div class="h-48 bg-slate-800 relative flex items-center justify-center text-white overflow-hidden">
-                        <div class="absolute inset-0 bg-gradient-to-tr from-red-900 to-slate-900 opacity-90"></div>
-                        <i class="fa-solid fa-temperature-high text-5xl text-red-400 opacity-40"></i>
-                        <span class="absolute top-4 right-4 bg-red-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">Embedded System</span>
-                    </div>
-                    <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
-                        <div class="space-y-2">
-                            <span class="text-[10px] text-slate-400 font-semibold">2023.10 ~ 2023.11</span>
-                            <h3 class="text-lg font-bold text-slate-900">MCU 기반 온도 감지 시스템</h3>
-                            <p class="text-xs text-slate-600 leading-relaxed">
-                                ATmega128 MCU, Thermistor 센서, ADC 및 타이머/카운터 인터럽트를 활용한 실시간 온도 측정 및 4-digit FND/USART 제어.
-                            </p>
-                        </div>
-                        <div class="flex flex-wrap gap-1.5">
-                            <span class="text-[10px] font-medium bg-slate-100 text-slate-700 px-2 py-0.5 rounded">AVR MCU</span>
-                            <span class="text-[10px] font-medium bg-slate-100 text-slate-700 px-2 py-0.5 rounded">ADC</span>
-                            <span class="text-[10px] font-medium bg-slate-100 text-slate-700 px-2 py-0.5 rounded">Timer Interrupt</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 프로젝트 4 -->
-                <div class="project-card bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col">
-                    <div class="h-48 bg-slate-800 relative flex items-center justify-center text-white overflow-hidden">
-                        <div class="absolute inset-0 bg-gradient-to-tr from-emerald-900 to-slate-900 opacity-90"></div>
-                        <i class="fa-solid fa-car text-5xl text-emerald-400 opacity-40"></i>
-                        <span class="absolute top-4 right-4 bg-emerald-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">Autonomous</span>
-                    </div>
-                    <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
-                        <div class="space-y-2">
-                            <span class="text-[10px] text-slate-400 font-semibold">2023.11 ~ 2023.12</span>
-                            <h3 class="text-lg font-bold text-slate-900">자율주행 라인 트레이서</h3>
-                            <p class="text-xs text-slate-600 leading-relaxed">
-                                알티노 차량 플랫폼 기반 적외선(IR) 및 조도(CDS) 센서 데이터를 활용한 주행 알고리즘 및 조향 제어 F/W 작성.
-                            </p>
-                        </div>
-                        <div class="flex flex-wrap gap-1.5">
-                            <span class="text-[10px] font-medium bg-slate-100 text-slate-700 px-2 py-0.5 rounded">C</span>
-                            <span class="text-[10px] font-medium bg-slate-100 text-slate-700 px-2 py-0.5 rounded">IR/CDS 센서</span>
-                            <span class="text-[10px] font-medium bg-slate-100 text-slate-700 px-2 py-0.5 rounded">조향 제어</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 프로젝트 5 -->
-                <div class="project-card bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col">
-                    <div class="h-48 bg-slate-800 relative flex items-center justify-center text-white overflow-hidden">
-                        <div class="absolute inset-0 bg-gradient-to-tr from-purple-900 to-slate-900 opacity-90"></div>
-                        <i class="fa-solid fa-calculator text-5xl text-purple-400 opacity-40"></i>
-                        <span class="absolute top-4 right-4 bg-purple-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-full">Embedded System</span>
-                    </div>
-                    <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
-                        <div class="space-y-2">
-                            <span class="text-[10px] text-slate-400 font-semibold">2023.11 ~ 2023.12</span>
-                            <h3 class="text-lg font-bold text-slate-900">임베디드 계산기 시스템</h3>
-                            <p class="text-xs text-slate-600 leading-relaxed">
-                                ATmega128 MCU를 기반으로 키패드 사용자 입력을 처리하여 산술 연산을 수행하고 결과를 LCD 디스플레이에 출력하는 임베디드 연산장치 설계.
-                            </p>
-                        </div>
-                        <div class="flex flex-wrap gap-1.5">
-                            <span class="text-[10px] font-medium bg-slate-100 text-slate-700 px-2 py-0.5 rounded">AVR MCU</span>
-                            <span class="text-[10px] font-medium bg-slate-100 text-slate-700 px-2 py-0.5 rounded">C Programming</span>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <!-- WORK & MILITARY EXPERIENCE 섹션 (경력 및 복무 분리) -->
-    <section id="work-experience" class="py-20 bg-slate-50 border-b border-slate-200/60">
-        <div class="max-w-4xl mx-auto px-6">
-            <div class="text-center max-w-2xl mx-auto mb-16 space-y-2">
-                <h2 class="text-xs font-bold text-blue-600 tracking-wider uppercase">Career & Service</h2>
-                <p class="text-2xl md:text-3xl font-extrabold text-slate-900">회사 경력 및 군 복무</p>
-                <div class="w-12 h-1 bg-blue-600 mx-auto rounded-full mt-4"></div>
-            </div>
-
-            <div class="relative border-l-2 border-slate-200 ml-4 md:ml-32 space-y-10">
-
-                <!-- 군 복무 -->
-                <div class="relative pl-8">
-                    <span class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-blue-600 border-4 border-white"></span>
-                    <div class="md:absolute md:-left-36 md:top-1 text-xs font-bold text-slate-400 mb-1 md:mb-0 md:text-right md:w-28">
-                        2025.11 - 2027.08
-                    </div>
-                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-2">
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-base font-bold text-slate-900">대한민국 공군 의무복무</h3>
-                            <span class="text-[10px] font-semibold bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100">복무 중</span>
-                        </div>
-                        <p class="text-xs text-slate-600 leading-relaxed font-medium">
-                            소속: 제19전투비행단 기지방호전대 대공방어대 정비반
-                        </p>
-                        <p class="text-xs text-slate-500 leading-relaxed">
-                            • 대공방어 장비 및 관련 전자/제어 시스템 정비 및 유지보수 담당
-                        </p>
-                    </div>
-                </div>
-
-                <!-- 회사 2 -->
-                <div class="relative pl-8">
-                    <span class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-slate-300 border-4 border-white"></span>
-                    <div class="md:absolute md:-left-36 md:top-1 text-xs font-bold text-slate-400 mb-1 md:mb-0 md:text-right md:w-28">
-                        2025.07 - 2025.10
-                    </div>
-                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-2">
-                        <h3 class="text-base font-bold text-slate-900">쿠팡풀필먼트서비스유한회사</h3>
-                        <p class="text-xs text-slate-600 leading-relaxed">
-                            • 2025.07.23 ~ 2025.10.18 근무
-                        </p>
-                    </div>
-                </div>
-
-                <!-- 회사 1 -->
-                <div class="relative pl-8">
-                    <span class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-slate-300 border-4 border-white"></span>
-                    <div class="md:absolute md:-left-36 md:top-1 text-xs font-bold text-slate-400 mb-1 md:mb-0 md:text-right md:w-28">
-                        2024.12 - 2025.07
-                    </div>
-                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-2">
-                        <h3 class="text-base font-bold text-slate-900">(주)4링크스</h3>
-                        <p class="text-xs text-slate-600 leading-relaxed">
-                            • 2024.12.02 ~ 2025.07.17 근무
-                        </p>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <!-- ACTIVITIES & EDUCATION 섹션 (경험/교육 분리) -->
-    <section id="activities" class="py-20 bg-white border-b border-slate-200/60">
-        <div class="max-w-4xl mx-auto px-6">
-            <div class="text-center max-w-2xl mx-auto mb-16 space-y-2">
-                <h2 class="text-xs font-bold text-blue-600 tracking-wider uppercase">Activities & Education</h2>
-                <p class="text-2xl md:text-3xl font-extrabold text-slate-900">대외 활동 및 교육 이수</p>
-                <div class="w-12 h-1 bg-blue-600 mx-auto rounded-full mt-4"></div>
-            </div>
-
-            <div class="relative border-l-2 border-slate-200 ml-4 md:ml-32 space-y-8">
-
-                <!-- 교육 1 -->
-                <div class="relative pl-8">
-                    <span class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-blue-600 border-4 border-white"></span>
-                    <div class="md:absolute md:-left-36 md:top-1 text-xs font-bold text-slate-400 mb-1 md:mb-0 md:text-right md:w-28">
-                        2026.07.23
-                    </div>
-                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm space-y-2">
-                        <h3 class="text-base font-bold text-slate-900">전반기 AI 범용교육</h3>
-                        <p class="text-xs text-slate-600 leading-relaxed">
-                            • AI 기술 개념 및 실무 응용 범용 교육 과정 이수
-                        </p>
-                    </div>
-                </div>
-
-                <!-- 캠프 및 대외활동 -->
-                <div class="relative pl-8">
-                    <span class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-slate-300 border-4 border-white"></span>
-                    <div class="md:absolute md:-left-36 md:top-1 text-xs font-bold text-slate-400 mb-1 md:mb-0 md:text-right md:w-28">
-                        2023 - 2024
-                    </div>
-                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-                        <h3 class="text-base font-bold text-slate-900">전문 캠프 및 프로그램 이수</h3>
-                        <ul class="text-xs text-slate-600 leading-relaxed space-y-1.5">
-                            <li>• <strong>모빌리티 윈터캠프</strong> : 친환경 모빌리티 시스템 및 센서 제어 교육</li>
-                            <li>• <strong>2023 Fulbright English Program</strong> : 글로벌 커뮤니케이션 역량 강화 프로그램 수료</li>
-                            <li>• <strong>2023 동계 SW 캠프</strong> : 인공지능 기초 및 Python 활용 SW 개발 알고리즘 이수</li>
-                        </ul>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <!-- CONTACT 섹션 -->
-    <section id="contact" class="py-20 bg-slate-900 text-white">
-        <div class="max-w-4xl mx-auto px-6 text-center space-y-8">
-            <div class="space-y-3">
-                <h2 class="text-xs font-bold text-blue-400 tracking-wider uppercase">Contact</h2>
-                <p class="text-3xl md:text-4xl font-black">함께 성장할 기회를 기다립니다.</p>
-                <p class="text-slate-400 text-xs md:text-sm max-w-md mx-auto leading-relaxed">
-                    궁금한 점이 있거나 연락을 주고받고 싶으시다면 언제든 편하게 이메일이나 전화로 연락주세요.
-                </p>
-            </div>
-
-            <div class="inline-flex flex-col sm:flex-row items-center gap-4 bg-white/5 border border-white/10 p-4 rounded-2xl backdrop-blur-md">
-                <div class="flex items-center gap-2 px-4 py-2 bg-white/10 rounded-xl text-xs font-medium text-slate-200">
-                    <i class="fa-solid fa-envelope text-blue-400"></i>
-                    <span id="email-text">hykim027@naver.com</span>
-                </div>
-                <button onclick="copyEmail()" class="w-full sm:w-auto px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition shadow-lg shadow-blue-600/30">
-                    이메일 주소 복사
-                </button>
-            </div>
-
-            <div class="text-xs text-slate-400 pt-2">
-                <i class="fa-solid fa-phone text-blue-400 mr-1"></i> Contact: 010-5864-5126
-            </div>
-        </div>
-    </section>
-
-    <!-- 푸터 -->
-    <footer class="bg-slate-950 py-6 text-center text-xs text-slate-500 border-t border-white/5">
-        <div class="max-w-6xl mx-auto px-6">
-            © 2026 Kim Yong-Hyeon. All rights reserved.
-        </div>
-    </footer>
-
-    <!-- 토스트 알림 -->
-    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white px-5 py-3 rounded-full text-xs font-semibold shadow-2xl opacity-0 pointer-events-none transition-all duration-300 flex items-center gap-2 border border-slate-700 whitespace-nowrap">
-        <span class="text-emerald-400"><i class="fa-solid fa-circle-check"></i></span>
-        <span id="toast-message">알림 메시지</span>
+  <!-- SESSION 1 -->
+  <section id="attitude">
+    <div class="section-head">
+      <span class="eyebrow">SESSION 01</span>
+      <h2>예배자의 자세, 인도자의 자세</h2>
+      <p>인도자가 가장 먼저 해야 할 일은 스스로 묵상하는 것. 콘티는 그 다음이다.</p>
     </div>
 
-    <script>
-        // 모바일 메뉴 토글
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobile-menu');
-            menu.classList.toggle('hidden');
-        }
+    <div class="banner-card">
+      <div class="banner banner-navy">
+        <span class="badge badge-navy">Attitude</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="#eaf1ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 21c-4-2.6-8-6-8-10.5A4.5 4.5 0 0 1 12 7a4.5 4.5 0 0 1 8 3.5C20 15 16 18.4 12 21Z"/>
+          <path d="M12 7v10"/>
+        </svg>
+      </div>
+      <div class="banner-body">
+        <ul class="principle-list" style="margin-bottom:16px;">
+          <li><strong>인도자는 독재자가 아니다.</strong> 나의 생각이 아니라 주님의 영으로 이끌어야 한다.</li>
+          <li>인도자는 찬양팀을 인도하는 동시에 <strong>성도들을 인도</strong>해야 하는 이중적 역할을 가진다.</li>
+          <li>인도자가 <strong>가장 먼저 묵상되어야</strong> 한다. 콘티를 짠 이유를 스스로 먼저 고백하고, 그 마음을 찬양팀에게 전달해야 한다.</li>
+          <li>모든 것은 결국 <strong>하나님이 이끄시는 대로</strong> 기다리고 따라가는 것이다.</li>
+        </ul>
+        <div class="callout"><b>실천 사항 —</b> 인도자는 찬양 전, 예배 전 반드시 <b>기도로 준비</b>해야 한다.</div>
+      </div>
+    </div>
+  </section>
 
-        function copyEmail() {
-            const email = document.getElementById('email-text').innerText;
-            navigator.clipboard.writeText(email);
-            showToast('이메일 주소가 복사되었습니다.');
-        }
+  <!-- SESSION 2 -->
+  <section id="conti">
+    <div class="section-head">
+      <span class="eyebrow">SESSION 02</span>
+      <h2>콘티 짜는 법 3가지</h2>
+      <p>주제, 스토리텔링, 절기 — 어떤 방식으로 짜든 마지막 기준은 하나다.</p>
+    </div>
 
-        function showToast(msg) {
-            const t = document.getElementById('toast');
-            document.getElementById('toast-message').innerText = msg;
-            t.style.opacity = '1';
-            setTimeout(() => { t.style.opacity = '0'; }, 2500);
-        }
-    </script>
+    <div class="banner-card">
+      <div class="banner banner-warm">
+        <span class="badge badge-warm">01 · Theme</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff1e0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+        </svg>
+      </div>
+      <div class="banner-body">
+        <h3>주제를 정해서 스토리텔링 만들기</h3>
+        <p>하나의 주제(예: 사랑) 안에도 여러 갈래가 있다. 주님의 사랑, 사람에 대한 사랑, 하나님의 열심 등 그중 추려서 빠른 곡 하나, 느린 곡 하나를 배치하면 전체 흐름이 완성된다.</p>
+        <p>더 깊이 들어가면 예배 직전 <b style="color:var(--ink)">가장 정결한 모습</b>으로 나아가야 하기에, 주제가 하나로 딱 떨어지지 않을 수도 있다. 구약의 제사장이 정결 의식을 거쳐 지성소에 들어갔던 것처럼, 우리도 죄 씻김을 입었지만 여전히 연약하기에 회개가 먼저 필요하다.</p>
+        <div class="flow">
+          <span class="step">회개</span><span class="arrow">→</span>
+          <span class="step">보혈 · 십자가 사랑</span><span class="arrow">→</span>
+          <span class="step">예배로 들어가는 찬양</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="banner-card">
+      <div class="banner banner-purple">
+        <span class="badge badge-purple">02 · Story</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="#f1ecff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19V6a2 2 0 0 1 2-2h9l5 5v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M15 4v5h5"/><path d="M8 13h8M8 17h5"/>
+        </svg>
+      </div>
+      <div class="banner-body">
+        <h3>스토리텔링 만들기</h3>
+        <p>주제 설정과 곡의 배치 자체가 하나의 이야기 흐름을 이루도록 짜는 방식. 회개 → 사랑 → 임재처럼, 순서 자체가 메시지가 된다.</p>
+      </div>
+    </div>
+
+    <div class="banner-card">
+      <div class="banner banner-teal">
+        <span class="badge badge-teal">03 · Season</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="#e4faf5" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/>
+        </svg>
+      </div>
+      <div class="banner-body">
+        <h3>절기(이벤트)에 맞추기</h3>
+        <p>부활절, 성탄절, 재림절, 고난주간, 추수감사절 등 교회 절기에 맞는 주제 찬양을 선곡한다. 한여름에 성탄 찬양을 부르면 어색하듯, 절기와 곡의 결이 맞아야 한다.</p>
+        <p style="margin-bottom:0;"><b style="color:var(--ink)">아이디어가 안 떠오를 때 —</b> "OO주간 콘티"로 검색해 참고해도 좋다. 가사와 고백을 살펴보고 마음에 와닿으면 활용한다.</p>
+        <div class="tags" style="margin-top:14px;">
+          <span class="tag">부활절</span><span class="tag">성탄절</span><span class="tag">고난주간</span><span class="tag">추수감사절</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="quote-block">
+      <p>“이 콘티(고백)를 가지고, 나의 고백으로 만들 수 있는가?”</p>
+      <span>다른 사람의 콘티든 AI로 짠 콘티든, 하나님은 방법이 아니라 드리는 마음의 중심을 보신다.</span>
+    </div>
+
+    <p style="color:var(--ink-faint); font-size:13.5px; margin-top:20px;">
+      * 인도자 이론은 여기까지가 핵심이다. 싱어 컨트롤, 화음, 세션과의 합은 실전 경험을 통해서만 늘어난다.
+    </p>
+  </section>
+
+  <!-- VOCAL -->
+  <section id="vocal">
+    <div class="section-head">
+      <span class="eyebrow">ETC.</span>
+      <h2>기본 발성 스킬 2가지</h2>
+      <p>인도자는 발성이 커야 한다. 그 기반은 호흡과 소리가 나오는 위치, 이 두 가지다.</p>
+    </div>
+
+    <div class="icon-card-grid">
+      <div class="icon-card">
+        <div class="icon-circle blue">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20c0-4 3-7 3-11a3 3 0 0 1 6 0c0 4 3 7 3 11"/><path d="M9 20h6"/></svg>
+        </div>
+        <h4>호흡</h4>
+        <p class="desc">폐도 스트레칭이 필요하다. 아침에 몸을 안 풀고 바로 발성하면 호흡이 짧아진다. 연습으로 폐활량을 늘릴 수 있다.</p>
+        <ol class="step-list">
+          <li>어깨 힘을 완전히 빼고 편하게 선다</li>
+          <li>코로 들이마시며 횡격막이 내려가고 배가 나오는 것을 느낀다</li>
+          <li>3초간 숨을 멈춘다</li>
+          <li>일정한 힘으로 끝까지 내뱉는다 (세게 뱉지 않고 균일하게)</li>
+          <li>끝까지 내뱉은 뒤, 한 번 더 짧게 쥐어짜듯 내뱉는다</li>
+        </ol>
+        <div class="why-box">하루 최소 <b>5세트</b> 추천. 힘은 목이 아니라 배에서, 소리는 입천장을 타고 나가는 느낌으로.</div>
+      </div>
+
+      <div class="icon-card">
+        <div class="icon-circle green">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>
+        </div>
+        <h4>소리의 위치</h4>
+        <p class="desc">평소 대화 톤 · 스피치 톤 · 노래 톤은 소리가 나오는 위치가 모두 다르다. 평소처럼 노래하면 목이 금방 상한다.</p>
+        <ol class="step-list">
+          <li>도입부 — 공기 비중을 높여 부드럽게 밀어낸다</li>
+          <li>중간 구간 — 공기와 소리를 반반으로 (공기 반, 소리 반)</li>
+          <li>클라이맥스 — 소리 비중을 조금 더 키운다</li>
+        </ol>
+        <div class="why-box">핵심은 <b>위치 + 소리량 + 힘의 양 + 호흡량</b>을 곡의 흐름에 맞게 유기적으로 조절하는 것.</div>
+      </div>
+    </div>
+
+    <div class="icon-card" style="margin-top:18px;">
+      <div class="icon-circle blue">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 15c1.2 1 2.4 1.5 4 1.5s2.8-.5 4-1.5"/></svg>
+      </div>
+      <h4>립트릴 연습법 (몸 풀기)</h4>
+      <p class="desc">입술을 살짝 내밀고 붙인 뒤(오리 주둥이 모양), 바람으로 입술을 떨리게 하는 연습. 손으로 볼을 살짝 잡아주면 도움이 된다.</p>
+      <ol class="step-list">
+        <li>소리 없이 바람만으로 입술 트릴을 유지한다</li>
+        <li>트릴이 안정되면 그 위에 소리(음)를 얹는다</li>
+        <li>처음엔 한 음을 길게 유지하고, 이후 음을 올렸다 내렸다 하며 음정 변화를 연습한다</li>
+      </ol>
+      <div class="why-box"><b>"아" 대신 "루 / 무"</b>를 추천하는 이유 — "아"로 몸을 풀면 목에 무리가 크다. "루/무"는 공기를 내보내는 힘 조절이 가장 쉬운 발음이라 워밍업에 적합하다.</div>
+    </div>
+  </section>
+
+  <!-- QNA -->
+  <section id="qna">
+    <div class="section-head">
+      <span class="eyebrow">Q&amp;A</span>
+      <h2>현장에서 나온 질문들</h2>
+    </div>
+
+    <div class="qna">
+      <div class="qna-card">
+        <div class="qna-q"><span class="qmark">Q.</span> 콘티를 다 짜고 연습까지 마쳤는데, 당일 받은 마음이 완전히 바뀌면 어떻게 하나요?</div>
+        <div class="qna-a">
+          그 마음이 정말 하나님이 주신 마음인지, 나의 욕심인지 먼저 구별할 줄 알아야 한다. 인도자는 목사님이 아니기에 그 마음을 확신하고 즉흥적으로 바꾸기는 어렵다.
+          <ul>
+            <li>이미 세션 팀 전체가 기존 콘티로 준비된 상태임을 고려해야 한다</li>
+            <li>내 마음이 아무리 중요해도, <b>팀 전체의 준비 상태(상황·환경)</b>를 함께 살펴야 한다</li>
+            <li>결론 — 그런 마음은 다음으로 미뤄도 된다</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="qna-card">
+        <div class="qna-q"><span class="qmark">Q.</span> 목사님이 특정 주제로 콘티를 요청하는 경우는 어떻게 하나요?</div>
+        <div class="qna-a">
+          목사님 성향에 따라 다르지만, 요청이 있으면 그에 맞춰 짜면 된다.
+          <ul>
+            <li>예: 신년 수련회처럼 미리 정해진 곡이 있는 경우, <b>행사 전전주·전주부터</b> 그 곡들로 예배를 준비한다</li>
+            <li>회중이 곡에 익숙해진 상태로 행사를 맞이할 수 있어 훨씬 자연스럽다</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p class="final-quote">
+    인도자의 자세는 <span class="accent">성령의 인도</span>를 구하는 것,<br>
+    콘티의 기준은 <span class="accent">나의 고백</span>이 될 수 있는가,<br>
+    그리고 실력은 결국 <span class="accent">실전</span>을 통해 늘어간다.
+  </p>
+  <div class="meta">찬양 인도자 세미나 노트 — SESSION 01·02 &amp; ETC.</div>
+</footer>
+
 </body>
 </html>
